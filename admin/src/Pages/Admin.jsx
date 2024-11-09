@@ -13,6 +13,7 @@ const Admin = () => {
       <Routes>
         <Route path="/addproduct" element={<AddProduct />} />
         <Route path="/listproduct" element={<ListProduct />} />
+        <Route path="/DashBoard" element={<DashBoard />} />
       </Routes>
     </div>
   );

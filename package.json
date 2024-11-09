@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "main": "server/server.js",
+  "homepage": "https://natixe.github.io/Boutique-NoName/",
   "scripts": {
     "server-dev": "nodemon server/server.js",
     "client-dev": "vite",
@@ -13,7 +14,9 @@
     "preview": "vite preview",
     "format": "npx prettier --write **/*.{js,jsx,md}",
     "format:check": "npx prettier --check **/*.{js,jsx,md}",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "cors": "^2.8.5",
