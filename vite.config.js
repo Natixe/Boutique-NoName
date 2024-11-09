@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react';
 
 // vite.config.js
 export default defineConfig({
-  base: '/Boutique-NoName/', // Définit le chemin de base de l'application
   plugins: [react()],
+  base: '/Boutique-NoName/', // Définit le chemin de base de l'application
   server: {
     fs: {
       cachedChecks: false
