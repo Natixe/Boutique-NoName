@@ -33,8 +33,8 @@ app.use(helmet({
 
 const pool = new Pool({
   user: PGUSER, 
-  host: "ep-old-dream-a2kusb6c.eu-central-1.aws.neon.tech",
-  database: "Boutique-NoName",
+  host: PGHOST,
+  database: PGDATABASE,
   password: PGPASSWORD,
   port: PGPORT,
   ssl: {
