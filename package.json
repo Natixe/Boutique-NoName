@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "main": "server/server.js",
-  "homepage": "https://natixe.github.io/Boutique-NoName/",
+  "homepage": "https://natixe.github.io/Boutique-NoName",
   "scripts": {
     "server-dev": "nodemon server/server.js",
     "client-dev": "vite",
