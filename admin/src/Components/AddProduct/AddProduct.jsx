@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./AddProduct.css";
 import upload_area from "../Assets/upload_area.svg";
 
@@ -13,7 +14,7 @@ const AddProduct = () => {
   });
 
   const backend_url = 'http://localhost:8888/api';
-
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -75,6 +76,7 @@ const AddProduct = () => {
       }
 
       alert('Produit ajouté avec succès');
+      navigate('/listproduct');
     } catch (error) {
       console.error('Erreur:', error.message);
       alert(`Erreur: ${error.message}`);
@@ -82,42 +84,44 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="addproduct">
-      <div className="addproduct-itemfield">
-        <p>Product title</p>
-        <input type="text" name="name" value={productDetails.name} onChange={handleInputChange} placeholder="Type here" />
-      </div>
-      <div className="addproduct-itemfield">
-        <p>Product description</p>
-        <input type="text" name="description" value={productDetails.description} onChange={handleInputChange} placeholder="Type here" />
-      </div>
-      <div className="addproduct-price">
+    <>
+      <div className="addproduct">
         <div className="addproduct-itemfield">
-          <p>Price</p>
-          <input type="number" name="old_price" value={productDetails.old_price} onChange={handleInputChange} placeholder="Type here" />
+          <p>Product title</p>
+          <input type="text" name="name" value={productDetails.name} onChange={handleInputChange} placeholder="Type here" />
         </div>
         <div className="addproduct-itemfield">
-          <p>Offer Price</p>
-          <input type="number" name="new_price" value={productDetails.new_price} onChange={handleInputChange} placeholder="Type here" />
+          <p>Product description</p>
+          <input type="text" name="description" value={productDetails.description} onChange={handleInputChange} placeholder="Type here" />
         </div>
+        <div className="addproduct-price">
+          <div className="addproduct-itemfield">
+            <p>Price</p>
+            <input type="number" name="old_price" value={productDetails.old_price} onChange={handleInputChange} placeholder="Type here" />
+          </div>
+          <div className="addproduct-itemfield">
+            <p>Offer Price</p>
+            <input type="number" name="new_price" value={productDetails.new_price} onChange={handleInputChange} placeholder="Type here" />
+          </div>
+        </div>
+        <div className="addproduct-itemfield">
+          <p>Product category</p>
+          <select value={productDetails.category} name="category" className="add-product-selector" onChange={handleInputChange}>
+            <option value="women">Women</option>
+            <option value="men">Men</option>
+            <option value="kid">Kid</option>
+          </select>
+        </div>
+        <div className="addproduct-itemfield">
+          <p>Product image</p>
+          <label htmlFor="file-input">
+            <img className="addproduct-thumbnail-img" src={!productDetails.image ? upload_area : URL.createObjectURL(productDetails.image)} alt="" />
+          </label>
+          <input onChange={handleInputChange} type="file" name="image" id="file-input" accept="image/*" hidden />
+        </div>
+        <button className="addproduct-btn" onClick={addProduct}>ADD</button>
       </div>
-      <div className="addproduct-itemfield">
-        <p>Product category</p>
-        <select value={productDetails.category} name="category" className="add-product-selector" onChange={handleInputChange}>
-          <option value="women">Women</option>
-          <option value="men">Men</option>
-          <option value="kid">Kid</option>
-        </select>
-      </div>
-      <div className="addproduct-itemfield">
-        <p>Product image</p>
-        <label htmlFor="file-input">
-          <img className="addproduct-thumbnail-img" src={!productDetails.image ? upload_area : URL.createObjectURL(productDetails.image)} alt="" />
-        </label>
-        <input onChange={handleInputChange} type="file" name="image" id="file-input" accept="image/*" hidden />
-      </div>
-      <button className="addproduct-btn" onClick={addProduct}>ADD</button>
-    </div>
+    </>
   );
 };
 

@@ -1,0 +1,9 @@
+.dashboard {
+  padding: 20px;
+}
+
+.chart {
+  width: 600px;
+  height: 400px;
+  margin-bottom: 40px; 
+}

@@ -56,3 +56,30 @@
     height: 60px;
 }
 }
+
+.HeadContainer{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.add-product{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0px 0px;
+  padding: 0px 3px;
+  border-radius: 6px;
+  background: #ff9595;
+  gap: 5px;
+  cursor: pointer;
+}
+
+
+@media(max-width:800px){
+  .add-product{
+      margin:0;
+  }
+}

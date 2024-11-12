@@ -351,6 +351,70 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Erreur du serveur', error: err.message });
 });
 
+app.get('/api/visits', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT visit_date, visit_count FROM visits ORDER BY visit_date');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des visites', error);
+    res.status(500).send('Erreur du serveur');
+  }
+});
+
+app.get('/api/active-users', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT timestamp, user_count FROM active_users ORDER BY timestamp');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des utilisateurs actifs', error);
+    res.status(500).send('Erreur du serveur');
+  }
+});
+
+app.get('/api/cart-stats', async (req, res) => {
+  try {
+    const soldItemsResult = await pool.query('SELECT COUNT(*) FROM orders');
+    const cartItemsResult = await pool.query("SELECT COUNT(*) FROM carts WHERE status = 'pending'");
+    res.json({
+      soldItems: parseInt(soldItemsResult.rows[0].count),
+      cartItems: parseInt(cartItemsResult.rows[0].count),
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des statistiques de panier', error);
+    res.status(500).send('Erreur du serveur');
+  }
+});
+
+app.get('/api/revenue', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT order_date, SUM(total_amount) AS revenue
+      FROM orders
+      GROUP BY order_date
+      ORDER BY order_date
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Erreur lors de la récupération du chiffre d\'affaires', error);
+    res.status(500).send('Erreur du serveur');
+  }
+});
+
+app.get('/api/revenue-by-category', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT order_date, category, SUM(total_amount) AS revenue
+      FROM orders
+      GROUP BY order_date, category
+      ORDER BY order_date
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Erreur lors de la récupération du chiffre d\'affaires par catégorie', error);
+    res.status(500).send('Erreur du serveur');
+  }
+});
+
 // Démarrer le serveur
 app.listen(PORT_API, () => {
   console.log(`Serveur en cours d'exécution sur le port ${PORT_API}`);

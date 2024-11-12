@@ -5,7 +5,7 @@ import Admin from "./Pages/Admin";
 import React from "react";
 
 export const backend_url = 'http://localhost:8888/api';
-export const currency = '$';
+export const currency = '\u20AC';
 
 function App() {
 
