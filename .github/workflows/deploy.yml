@@ -72,6 +72,7 @@ jobs:
           else
             echo "Erreur : le fichier .env n'existe pas."
             exit 1
+          fi  # Ajoutez cette ligne pour fermer le bloc if  
 
       - name: 📂 Afficher les fichiers à transférer
         run: |
