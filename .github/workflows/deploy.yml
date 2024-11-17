@@ -1,5 +1,5 @@
 name: 🚀 Deploy
-
+  
 on:
   push:
     branches:
@@ -43,24 +43,18 @@ jobs:
       - name: ⬇️ Récupérer le dépôt
         uses: actions/checkout@v4
 
-      - name: Authentifier Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: 🗂️ Liste des fichiers
-        run: ls -la
-
       - name: Générer le fichier .env
         run: |
-          echo "PORT_API=${{ secrets.PORT_API }}" >> .env
-          echo "PGHOST=${{ secrets.PGHOST }}" >> .env
-          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> .env
-          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> .env
-          echo "PGPORT=${{ secrets.PGPORT }}" >> .env
-          echo "PGUSER=${{ secrets.PGUSER }}" >> .env
-          echo "APP_ENV=${{ secrets.APP_ENV }}" >> .env
+          echo "PORT_API=${{ secrets.PORT_API }}" >> ../../.env
+          echo "PGHOST=${{ secrets.PGHOST }}" >> ../../.env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ../../.env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ../../.env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> ../../.env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> ../../.env
+          echo "APP_ENV=${{ secrets.APP_ENV }}" >> ../../.env
+
+      - name: 🔍 Vérifier les fichiers présents
+        run: ls -la
 
       - name: 📦 Copier les fichiers
         uses: appleboy/scp-action@v0.1.7
@@ -69,8 +63,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           source: |
-            docker-compose.yml
-            .env
+            ./docker-compose.yml
+            ./.env
           target: /home/user/
           port: 22
           timeout: 30s
@@ -78,6 +72,9 @@ jobs:
           use_insecure_cipher: false
           rm: false
           debug: true
+
+      - name: 🔍 Vérifier les fichiers présents
+        run: ls -la
 
       - name: 🔍 Vérifier les permissions des fichiers
         run: |
