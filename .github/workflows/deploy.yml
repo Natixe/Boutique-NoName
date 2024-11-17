@@ -83,19 +83,17 @@ jobs:
           cp ./docker-compose.yml ./deploy_files/
           cp ./.env ./deploy_files/
 
-      - name: 📦 Copier les fichiers
+      - name: 🚀 Transférer les fichiers vers le serveur
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_ACTION }}
           source: ./deploy_files
           target: /home/user/
           port: 22
           timeout: 30s
           command_timeout: 10m
-          use_insecure_cipher: false
-          rm: false
           debug: true
 
       - name: 🔍 Vérifier les permissions des fichiers
@@ -110,4 +108,4 @@ jobs:
         run: |
           docker pull natixe28/boutique-noname:production
           docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 -d natixe28/boutique-noname:production
-          docker system prune --all --volumes --force
+          docker system prune --all --volumes --forcels
