@@ -63,19 +63,20 @@ jobs:
             echo "Le fichier docker-compose.yml existe."
           else
             echo "Le fichier docker-compose.yml est manquant."
+            exit 1
           fi
       
           if [ -f ./.env ]; then
             echo "Le fichier .env existe."
           else
             echo "Le fichier .env est manquant."
+            exit 1
           fi
 
       - name: 🗂️ Préparer les fichiers pour le déploiement
         run: |
-          mkdir deploy_files
-          cp ./docker-compose.yml ./deploy_files/
-          cp ./.env ./deploy_files/
+          cp ./docker-compose.yml ./
+          cp ./.env ./
 
       - name: 🚀 Transférer les fichiers vers le serveur
         uses: appleboy/scp-action@v0.1.7
@@ -83,7 +84,9 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY_ACTION }}
-          source: ./deploy_files
+          source: |
+            ./docker-compose.yml
+            ./.env
           target: /home/user/
           port: 22
           timeout: 30s
@@ -92,13 +95,12 @@ jobs:
 
       - name: 🔍 Vérifier les permissions des fichiers
         run: |
-          ls -la /home/user/deploy_files/docker-compose.yml
-          ls -la /home/user/deploy_files/.env
+          ls -la /home/user/docker-compose.yml
+          ls -la /home/user/.env
 
       - name: 🚀 Lancer Docker Compose en Production
         run: |
-          cd /home/user/deploy_files/
+          cd /home/user/
           docker-compose pull
-          docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 natixe28/boutique-noname:production 
           docker-compose down
           docker-compose up -d --remove-orphans
