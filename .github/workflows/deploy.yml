@@ -77,13 +77,19 @@ jobs:
         run: |
             grep -o '^[^#]*' .env | sed 's/=.*/=***REDACTED***/'   
 
+      - name: 🗂️ Préparer les fichiers pour le déploiement
+        run: |
+          mkdir deploy_files
+          cp ./docker-compose.yml ./deploy_files/
+          cp ./.env ./deploy_files/
+
       - name: 📦 Copier les fichiers
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: './docker-compose.yml .env'
+          source: ./deploy_files
           target: /home/user/
           port: 22
           timeout: 30s
