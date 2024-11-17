@@ -75,7 +75,7 @@ jobs:
           fi
 
       - name: 🚀 Transférer les fichiers au VPS
-        uses: appleboy/scp-action@v0.1.9  # Utilisez une version plus récente
+        uses: appleboy/scp-action@v0.1.7  # Utilisez une version plus récente
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
