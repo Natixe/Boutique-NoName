@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AgCharts } from 'ag-charts-react';
 import './DashBoard.css';
 import { backend_url } from "../../App";
