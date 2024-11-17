@@ -56,11 +56,27 @@ jobs:
                   echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> .env
                   echo "PGPORT=${{ secrets.PGPORT }}" >> .env
                   echo "PORT=8888" >> .env
+            - name: 🚀 Transférer les fichiers au VPS
+              uses: appleboy/scp-action@v0.1.0
+              with:
+                host: ${{ secrets.VPS_HOST }}
+                username: ${{ secrets.VPS_USER }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                source: |
+                  docker-compose.yml
+                  .env
+                target: /home/${{ secrets.VPS_USER }}/Boutique-NoName/
 
             - name: 🚀 Run Docker Compose on Production
-              run: |
-                docker pull natixe28/boutique-noname:production
-                docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 natixe28/boutique-noname:production 
-                docker system prune --all --volumes --force
+              uses: appleboy/ssh-action@v0.1.3
+              with:
+                host: ${{ secrets.VPS_HOST }}
+                username: ${{ secrets.VPS_USER }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                script: |
+                  cd /home/${{ secrets.VPS_USER }}/Boutique-NoName/
+                  docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 natixe28/boutique-noname:production 
+                  docker-compose up -d --build
+                  docker system prune --all --volumes --force
             - name: 🧹 Cleanup .env
               run: rm .env    
