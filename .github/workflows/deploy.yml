@@ -1,5 +1,5 @@
-name: 🚀 Deploy
-  
+name: 🚀 Déploiement
+
 on:
   push:
     branches:
@@ -73,11 +73,6 @@ jobs:
             exit 1
           fi
 
-      - name: 🗂️ Préparer les fichiers pour le déploiement
-        run: |
-          cp ./docker-compose.yml ./
-          cp ./.env ./
-
       - name: 🚀 Transférer les fichiers vers le serveur
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -104,3 +99,7 @@ jobs:
           docker-compose pull
           docker-compose down
           docker-compose up -d --remove-orphans
+
+      - name: 🧹 Nettoyer Docker (Optionnel)
+        run: |
+          docker system prune -af --volumes
