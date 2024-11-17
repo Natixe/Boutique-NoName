@@ -99,5 +99,6 @@ jobs:
         run: |
           cd /home/user/deploy_files/
           docker-compose pull
+          docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 natixe28/boutique-noname:production 
           docker-compose down
           docker-compose up -d --remove-orphans
