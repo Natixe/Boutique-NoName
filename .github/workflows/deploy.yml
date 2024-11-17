@@ -98,13 +98,16 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY_ACTION }}
           source: |
-            ${{ github.workspace }}/docker-compose.yml
-            ${{ github.workspace }}/.env
+            docker-compose.yml
+            .env
           target: /home/user/
           port: 22
           timeout: 30s
           command_timeout: 10m
           debug: true
+          script: |
+            ls -la /home/user/docker-compose.yml
+            ls -la /home/user/.env
 
       - name: 🔍 Vérifier les permissions des fichiers
         run: |
