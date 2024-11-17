@@ -1,20 +1,33 @@
 version: '3.8'
 services:
-  app:
+  db:
+    image: postgres:13
     environment:
-      - PORT_API
-      - PGHOST
-      - PGDATABASE
-      - PGPASSWORD
-      - PGPORT
-      - PGUSER
-    container_name: boutique-noname
+      POSTGRES_USER: Rusk.Shop_owner
+      POSTGRES_PASSWORD: Qyn0HvLleX2Z
+      POSTGRES_DB: Boutique-NoName
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  app:
     image: natixe28/boutique-noname:production
+    depends_on:
+      - db
+    environment:
+      PGUSER: your_username
+      PGHOST: db
+      PGDATABASE: your_database
+      PGPASSWORD: your_password
+      PGPORT: 5432
+      PORT: 8888  
+    container_name: boutique-noname
     restart: always
     ports:
       - "3000:3000"
       - "5173:5173"
       - "8888:8888"
-
+volumes:
+  db-data:
 
 
