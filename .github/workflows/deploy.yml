@@ -91,23 +91,30 @@ jobs:
           echo "Répertoire actuel : $(pwd)"
           ls -la
 
+
+
+
       - name: 🚀 Transférer les fichiers vers le serveur
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY_ACTION }}
-          source: |
-            docker-compose.yml
-            .env
-          target: /home/user/
           port: 22
-          timeout: 30s
-          command_timeout: 10m
-          debug: true
-          script: |
-            ls -la /home/user/docker-compose.yml
-            ls -la /home/user/.env
+          source: "docker-compose.yml,.env"
+          target: /home/user/
+
+
+
+
+
+
+
+
+
+
+
+
 
       - name: 🔍 Vérifier les permissions des fichiers
         run: |
