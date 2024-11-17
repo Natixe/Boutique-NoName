@@ -40,20 +40,27 @@ jobs:
         needs: [lint, typecheck, build]
         if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
         steps:
-          - name: ⬇️ Checkout repo
-            uses: actions/checkout@v4.1.1
-    
-          - name: Login to Docker Hub
-            uses: docker/login-action@v3
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-    
-          - name: 🚀 Run Docker Compose on Production
-            if: ${{ github.ref == 'refs/heads/main' }}
-            env:
-              APP_ENV: ${{ secrets.APP_ENV }}
-            run: |
-              docker pull natixe28/boutique-noname:production
-              docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 natixe28/boutique-noname:production 
-              docker system prune --all --volumes --force
+            - name: ⬇️ Checkout repo
+              uses: actions/checkout@v4.1.1
+
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - name: 📝 Create .env file
+              run: |
+                  echo "PGUSER=${{ secrets.PGUSER }}" >> .env
+                  echo "PGHOST=${{ secrets.PGHOST }}" >> .env
+                  echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> .env
+                  echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> .env
+                  echo "PGPORT=${{ secrets.PGPORT }}" >> .env
+                  echo "PORT=8888" >> .env
+
+            - name: 🚀 Run Docker Compose on Production
+              run: |
+                docker pull natixe28/boutique-noname:production
+                docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 natixe28/boutique-noname:production 
+                docker system prune --all --volumes --force
+            - name: 🧹 Cleanup .env
+              run: rm .env    

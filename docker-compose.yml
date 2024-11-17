@@ -3,9 +3,9 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: Rusk.Shop_owner
-      POSTGRES_PASSWORD: Qyn0HvLleX2Z
-      POSTGRES_DB: Boutique-NoName
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
     ports:
       - "5432:5432"
     volumes:
@@ -14,13 +14,8 @@ services:
     image: natixe28/boutique-noname:production
     depends_on:
       - db
-    environment:
-      PGUSER: your_username
-      PGHOST: db
-      PGDATABASE: your_database
-      PGPASSWORD: your_password
-      PGPORT: 5432
-      PORT: 8888  
+    env_file:
+      - .env
     container_name: boutique-noname
     restart: always
     ports:
