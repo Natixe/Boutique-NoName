@@ -73,6 +73,24 @@ jobs:
             exit 1
           fi
 
+          
+      - name: 📂 Liste des fichiers avant SCP
+        run: |
+            pwd
+            ls -la
+            cat docker-compose.yml
+            cat .en
+            
+      - name: 🔍 Vérifier les permissions des fichiers
+        run: |
+          ls -la ./docker-compose.yml
+          ls -la ./.env
+
+      - name: 📂 Vérifier le répertoire de travail
+        run: |
+          echo "Répertoire actuel : $(pwd)"
+          ls -la
+          
       - name: 🚀 Transférer les fichiers vers le serveur
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -80,8 +98,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY_ACTION }}
           source: |
-            ./docker-compose.yml
-            ./.env
+            ${{ github.workspace }}/docker-compose.yml
+            ${{ github.workspace }}/.env
           target: /home/user/
           port: 22
           timeout: 30s
