@@ -17,16 +17,16 @@ jobs:
     name: ⬣ ESLint
     runs-on: ubuntu-latest
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+      - name: 🛑 Annuler les exécutions précédentes
+        uses: styfle/cancel-workflow-action@0.12.1
 
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v3
+      - name: ⬇️ Récupérer le dépôt
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Installer les dépendances
         run: npm install
 
-      - name: 🔬 Lint
+      - name: 🔬 Linter le code
         run: npm run lint
 
   build:
@@ -35,19 +35,22 @@ jobs:
     secrets: inherit
 
   deploy:
-    name: 🚀 Deploy
+    name: 🚀 Déploiement
     runs-on: [self-hosted]
     needs: [lint, build]
     if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
     steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4.1.1
+      - name: ⬇️ Récupérer le dépôt
+        uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
+      - name: Authentifier Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 🗂️ Liste des fichiers
+        run: ls -la
 
       - name: 📦 Copier les fichiers
         uses: appleboy/scp-action@v0.1.7
@@ -71,10 +74,7 @@ jobs:
           ls -la docker-compose.yml
           ls -la .env
 
-      - name: 🗂️ Liste des fichiers
-        run: ls -la
-
-      - name: 🚀 Run Docker Compose on Production
+      - name: 🚀 Lancer Docker Compose en Production
         if: ${{ github.ref == 'refs/heads/main' }}
         env:
           APP_ENV: ${{ secrets.APP_ENV }}
