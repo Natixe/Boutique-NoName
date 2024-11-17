@@ -35,29 +35,25 @@ jobs:
     secrets: inherit
 
   deploy:
-    name: 🚀 Déploiement
-    runs-on: [self-hosted]
+    name: Deploy React App
+    runs-on: ubuntu-latest
     needs: [lint, build]
     if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
     steps:
-      - name: ⬇️ Récupérer le dépôt
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🏗️ Préparer les variables d'environnement
+      - name: Set up environment variables
         run: |
-          echo "PORT_API=${{ secrets.PORT_API }}" >> ./.env
-          echo "PGHOST=${{ secrets.PGHOST }}" >> ./.env
-          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./.env
-          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./.env
-          echo "PGPORT=${{ secrets.PGPORT }}" >> ./.env
-          echo "PGUSER=${{ secrets.PGUSER }}" >> ./.env
-          echo "APP_ENV=${{ secrets.APP_ENV }}" >> ./.env
+          echo "PORT_API=${{ secrets.PORT_API }}" >> .env
+          echo "PGHOST=${{ secrets.PGHOST }}" >> .env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> .env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> .env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> .env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> .env
+          echo "APP_ENV=${{ secrets.APP_ENV }}" >> .env
 
-      - name: 🔍 Vérifier le contenu du fichier .env
-        run: |
-          grep -o '^[^#]*' .env | sed 's/=.*/=***REDACTED***/'
-
-      - name: ✅ Vérifier l'existence des fichiers
+      - name: Verify files
         run: |
           if [ -f ./docker-compose.yml ]; then
             echo "Le fichier docker-compose.yml existe."
@@ -65,7 +61,7 @@ jobs:
             echo "Le fichier docker-compose.yml est manquant."
             exit 1
           fi
-      
+
           if [ -f ./.env ]; then
             echo "Le fichier .env existe."
           else
@@ -73,61 +69,22 @@ jobs:
             exit 1
           fi
 
-          
-      - name: 📂 Liste des fichiers avant SCP
-        run: |
-            pwd
-            ls -la
-            cat docker-compose.yml
-            cat .env
-            
-      - name: 🔍 Vérifier les permissions des fichiers
-        run: |
-          ls -la ./docker-compose.yml
-          ls -la ./.env
-
-      - name: 📂 Vérifier le répertoire de travail
-        run: |
-          echo "Répertoire actuel : $(pwd)"
-          ls -la
-
-
-
-
-      - name: 🚀 Transférer les fichiers vers le serveur
+      - name: Transfer files via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY_ACTION }}
+          key: ${{ secrets.KEY }}
           port: 22
-          source: "docker-compose.yml,.env"
+          source: docker-compose.yml,.env
           target: /home/user/
+          debug: true
 
-
-
-
-
-
-
-
-
-
-
-
-
-      - name: 🔍 Vérifier les permissions des fichiers
+      - name: Deploy with Docker Compose
         run: |
-          ls -la /home/user/docker-compose.yml
-          ls -la /home/user/.env
-
-      - name: 🚀 Lancer Docker Compose en Production
-        run: |
-          cd /home/user/
-          docker-compose pull
-          docker-compose down
-          docker-compose up -d --remove-orphans
-
-      - name: 🧹 Nettoyer Docker (Optionnel)
-        run: |
-          docker system prune -af --volumes
+          ssh -o StrictHostKeyChecking=no user@${{ secrets.HOST }} << 'EOF'
+            cd /home/user/
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d --remove-orphans
+          EOF
