@@ -9,7 +9,7 @@ services:
       - PGPORT
       - PGUSER
     container_name: boutique-noname
-    image: natixe28/boutique-noname:latest
+    image: natixe28/boutique-noname:production
     restart: always
     ports:
       - "3000:3000"
