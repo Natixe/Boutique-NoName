@@ -6,10 +6,10 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 5173, // Port du serveur Vite
     fs: {
       cachedChecks: false
     },
-    port: 5173, // Port du serveur Vite
     proxy: {
       '/api': {
         target: 'http://localhost:8888', // Port du serveur Express
@@ -18,9 +18,12 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    port: 5173, // Port pour vite preview
+  },
   resolve: {
     alias: {
-      '@': '/src', //  Définit un alias pour le répertoire src, permettant d'importer des modules plus facilement
+      '@': './src', //  Définit un alias pour le répertoire src, permettant d'importer des modules plus facilement
     },
   },
 });

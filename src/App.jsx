@@ -1,16 +1,16 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 //import "dotenv/config";
 import React from "react";
-import Navbar  from "./components/Navbar/Navbar";
-import Shop from "./Pages/Shop";
-import Cart from "./Pages/Cart";
-import Product from "./Pages/Product";
-import Footer from "./Components/Footer/Footer";
-import ShopCategory from "./Pages/ShopCategory";
+import Navbar  from "./Components/Navbar/Navbar.jsx";
+import Shop from "./Pages/Shop.jsx";
+import Cart from "./Pages/Cart.jsx";
+import Product from "./Pages/Product.jsx";
+import Footer from "./Components/Footer/Footer.jsx";
+import ShopCategory from "./Pages/ShopCategory.jsx";
 import women_banner from "./Components/Assets/banner_women.png";
 import men_banner from "./Components/Assets/banner_mens.png";
 import kid_banner from "./Components/Assets/banner_kids.png";
-import LoginSignup from "./Pages/LoginSignup";
+import LoginSignup from "./Pages/LoginSignup.jsx";
 
 export const backend_url = `http://localhost:8888/api`;
 export const currency = '$';

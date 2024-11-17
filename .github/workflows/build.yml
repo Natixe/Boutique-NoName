@@ -1,0 +1,71 @@
+name: 🐳 Build And Push Docker Image
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        description: The tag to push to the Docker registry.
+        # required: true
+        # default: latest
+
+jobs:
+  build:
+    name: 🐳 Build
+    # only build/deploy main branch on pushes
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+    # if: ${{ (github.ref == 'refs/heads/main') && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.12.1
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: 🧑‍💻 Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          logout: true
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Setup cache
+      - name: ⚡️ Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: 🐳 Build Production Image
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: natixe28/boutique-noname:production
+          build-args: |
+            COMMIT_SHA=${{ github.sha }} \
+            PORT_API=${{ secrets.PORT_API }} \
+            PGHOST=${{ secrets.PGHOST }} \
+            PGDATABASE=${{ secrets.PGDATABASE }} \
+            PGPASSWORD=${{ secrets.PGPASSWORD }} \
+            PGPORT=${{ secrets.PGPORT }} \
+            PGUSER=${{ secrets.PGUSER }} \
+
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+
+      # This ugly bit is necessary if you don't want your cache to grow forever
+      # till it hits GitHub's limit of 5GB.
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: 🚚 Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache

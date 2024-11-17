@@ -1,16 +1,18 @@
 // vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // vite.config.js
 export default defineConfig({
   plugins: [react()],
-  base: '/Boutique-NoName/', // Définit le chemin de base de l'application
+  base: "/",
   server: {
+    host: '0.0.0.0',
+    port: 3000, // Port du serveur Vite
     fs: {
       cachedChecks: false
     },
-    port: 3000, // Port du serveur Vite
     proxy: {
       '/api': {
         target: 'http://localhost:8888', // Port du serveur Express
@@ -21,7 +23,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/src', //  Définit un alias pour le répertoire src, permettant d'importer des modules plus facilement
+      '@': './src', //  Définit un alias pour le répertoire src, permettant d'importer des modules plus facilement
     },
   },
 });

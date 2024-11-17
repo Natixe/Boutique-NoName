@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  app:
+    environment:
+      - PORT_API
+      - PGHOST
+      - PGDATABASE
+      - PGPASSWORD
+      - PGPORT
+      - PGUSER
+    container_name: boutique-noname
+    image: natixe28/boutique-noname:latest
+    restart: always
+    ports:
+      - "3000:3000"
+      - "5173:5173"
+      - "8888:8888"
+
+
+

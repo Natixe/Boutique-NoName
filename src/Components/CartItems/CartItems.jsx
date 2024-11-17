@@ -8,6 +8,20 @@ const CartItems = () => {
   const {products} = useContext(ShopContext);
   const {cartItems,removeFromCart,getTotalCartAmount} = useContext(ShopContext);
 
+  const handleRemoveFromCart = async (productId) => {
+    // Mise à jour du contexte local
+    removeFromCart(productId);
+  
+    // Appel à l'API backend pour mettre à jour le panier
+    await fetch(`${backend_url}/api/cart/update`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId, action: 'remove' }),
+    });
+  };
+
   return (
     <div className="cartitems">
       <div className="cartitems-format-main">
@@ -30,7 +44,7 @@ const CartItems = () => {
                       <p>{currency}{e.new_price}</p>
                       <button className="cartitems-quantity">{cartItems[e.id]}</button>
                       <p>{currency}{e.new_price*cartItems[e.id]}</p>
-                      <img onClick={()=>{removeFromCart(e.id)}} className="cartitems-remove-icon" src={cross_icon} alt="" />
+                      <img onClick={()=>{handleRemoveFromCart(e.id)}} className="cartitems-remove-icon" src={cross_icon} alt="" />
                     </div>
                      <hr />
                   </div>;

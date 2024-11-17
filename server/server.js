@@ -8,6 +8,8 @@ import cors from "cors";
 import pkg from "pg";
 import helmet from 'helmet';
 import { fileURLToPath } from 'url';
+import cron from 'node-cron';
+
 
 const { Pool } = pkg;
 
@@ -16,8 +18,8 @@ const __dirname = path.dirname(__filename);
 
 
 const app = express();
-// eslint-disable-next-line no-undef
-const { PORT_API, PGHOST, PGDATABASE, PGPASSWORD, PGPORT, PGUSER  } = process.env;
+
+const { PORT_API } = process.env;
 
 app.use(express.json());
 
@@ -32,15 +34,21 @@ app.use(helmet({
 }));
 
 const pool = new Pool({
-  user: PGUSER, 
-  host: PGHOST,
-  database: PGDATABASE,
-  password: PGPASSWORD,
-  port: PGPORT,
+  user: process.env.PGUSER, 
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT || 5432,
   ssl: {
     rejectUnauthorized: false,
   },
 });
+
+console.log('PGUSER:', process.env.PGUSER);
+console.log('PGHOST:', process.env.PGHOST);
+console.log('PGDATABASE:', process.env.PGDATABASE);
+console.log('PGPASSWORD:', process.env.PGPASSWORD);
+console.log('PGPORT:', process.env.PGPORT);
 
 // Route pour les images
 app.use('/api/images', express.static(path.join(__dirname, 'upload/images'), {
@@ -88,6 +96,18 @@ const fetchuser = async (req, res, next) => {
     res.status(401).send({ errors: "Token invalide" });
   }
 };
+
+// Après avoir vérifié le token JWT
+app.use(async (req, res, next) => {
+  if (req.user && req.user.id) {
+    try {
+      await pool.query('UPDATE users SET last_active = NOW() WHERE id = $1', [req.user.id]);
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour de last_active:', err.message);
+    }
+  }
+  next();
+});
 
 // ROOT API Route For Testing
 app.get("/api/", (req, res) => {
@@ -361,6 +381,8 @@ app.get('/api/visits', async (req, res) => {
   }
 });
 
+
+
 app.get('/api/active-users', async (req, res) => {
   try {
     const result = await pool.query('SELECT timestamp, user_count FROM active_users ORDER BY timestamp');
@@ -370,6 +392,9 @@ app.get('/api/active-users', async (req, res) => {
     res.status(500).send('Erreur du serveur');
   }
 });
+
+
+
 
 app.get('/api/cart-stats', async (req, res) => {
   try {
@@ -415,8 +440,128 @@ app.get('/api/revenue-by-category', async (req, res) => {
   }
 });
 
+//cron.schedule('0 */2 * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
+
+  try {
+    // Récupérer le nombre d'utilisateurs actifs dans les 2 dernières heures
+    const result = await pool.query(`
+      SELECT COUNT(*) AS user_count FROM users WHERE last_active >= NOW() - INTERVAL '2 HOURS'
+    `);
+    const userCount = parseInt(result.rows[0].user_count);
+
+    // Insérer les données dans la table `active_users`
+    await pool.query(`
+      INSERT INTO active_users (timestamp, user_count) VALUES (NOW(), $1)
+    `, [userCount]);
+
+    console.log(`Tâche cron: ${userCount} utilisateurs actifs enregistrés à ${new Date()}`);
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement des utilisateurs actifs:', error.message);
+  }
+});
+
+cron.schedule('*/1 * * * *', async () => {
+  try {
+    // Compter les visiteurs uniques dans les 30 dernières minutes
+    const result = await pool.query(`
+      SELECT COUNT(DISTINCT ip_address) AS visit_count FROM visits_log WHERE timestamp >= NOW() - INTERVAL '30 MINUTES'
+    `);
+    const visitCount = parseInt(result.rows[0].visit_count);
+
+    // Insérer les données dans la table `visits`
+    await pool.query(`
+      INSERT INTO visits (visit_date, visit_count) VALUES (NOW(), $1)
+    `, [visitCount]);
+
+    console.log(`Tâche cron: ${visitCount} visites enregistrées à ${new Date()}`);
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement des visites:', error.message);
+  }
+});
+
+cron.schedule('*/1 * * * *', async () => {
+  try {
+    // Compter les paniers en attente
+    const pendingCartsResult = await pool.query(`
+      SELECT COUNT(*) AS pending_count FROM carts WHERE status = 'pending'
+    `);
+    const pendingCount = parseInt(pendingCartsResult.rows[0].pending_count);
+
+    // Compter les paniers finalisés dans les 30 dernières minutes
+    const completedCartsResult = await pool.query(`
+      SELECT COUNT(*) AS completed_count FROM carts WHERE status = 'completed' AND updated_at >= NOW() - INTERVAL '30 MINUTES'
+    `);
+    const completedCount = parseInt(completedCartsResult.rows[0].completed_count);
+
+    // Insérer les données dans la table `cart_stats`
+    await pool.query(`
+      INSERT INTO cart_stats (timestamp, pending_carts, completed_carts) VALUES (NOW(), $1, $2)
+    `, [pendingCount, completedCount]);
+
+    console.log(`Tâche cron: Paniers enregistrés à ${new Date()}`);
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement des statistiques de paniers:', error.message);
+  }
+});
+
+// Configure Express pour faire confiance au proxy
+app.set('trust proxy', true);
+
+//Recuperation de IP de l'utilisateur
+app.use((req, res, next) => {
+  const ipAddress = req.ip;
+  console.log('Adresse IP du visiteur :', ipAddress);
+
+  // Enregistrement dans la base de données
+  pool.query(`
+    INSERT INTO visits_log (ip_address) VALUES ($1)
+  `, [ipAddress])
+    .then(() => {
+      console.log('Visite enregistrée avec succès');
+      next();
+    })
+    .catch(err => {
+      console.error('Erreur lors de l\'enregistrement de la visite:', err.message);
+      next();
+    });
+});
+
+app.post('/api/cart/update', async (req, res) => {
+  const { productId, action } = req.body;
+  const userId = req.user.id; // Assurez-vous que l'utilisateur est authentifié
+  let cartId;
+
+  try {
+    // Récupérer le panier de l'utilisateur
+    const cartResult = await pool.query('SELECT id FROM carts WHERE user_id = $1 AND status = $2', [userId, 'pending']);
+    if (cartResult.rows.length > 0) {
+      cartId = cartResult.rows[0].id;
+    } else {
+      // Créer un nouveau panier si aucun n'existe
+      const newCart = await pool.query('INSERT INTO carts (user_id, status) VALUES ($1, $2) RETURNING id', [userId, 'pending']);
+      cartId = newCart.rows[0].id;
+    }
+
+    // Mise à jour des articles du panier selon l'action
+    if (action === 'remove') {
+      await pool.query('DELETE FROM cart_items WHERE cart_id = $1 AND product_id = $2', [cartId, productId]);
+    } else if (action === 'add') {
+      await pool.query('INSERT INTO cart_items (cart_id, product_id, quantity) VALUES ($1, $2, 1) ON CONFLICT (cart_id, product_id) DO UPDATE SET quantity = cart_items.quantity + 1', [cartId, productId]);
+    }
+
+    // Mettre à jour le champ `updated_at` du panier
+    await pool.query('UPDATE carts SET updated_at = NOW() WHERE id = $1', [cartId]);
+
+    res.status(200).json({ message: 'Panier mis à jour' });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du panier:', error);
+    res.status(500).json({ error: 'Erreur du serveur' });
+  }
+});
+
 // Démarrer le serveur
-app.listen(PORT_API, () => {
+app.listen(PORT_API, '0.0.0.0', () => {
   console.log(`Serveur en cours d'exécution sur le port ${PORT_API}`);
   console.log('Initialisation du serveur...');
 });

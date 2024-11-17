@@ -1,0 +1,60 @@
+name: 🚀 Deploy
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request: {}
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+    lint:
+        name: 🧹 Lint
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4.1.1
+          - name: Install dependencies
+            run: npm install
+          - name: Run lint
+            run: npm run lint
+
+    typecheck:
+        name: 🔎 Type check
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4.1.1
+          - name: Install dependencies
+            run: npm install
+          - name: Run typecheck
+            run: npm run typecheck
+
+    build:
+        name: 🐳 Build
+        uses: ./.github/workflows/build.yml
+        secrets: inherit
+            
+    deploy:
+        name: 🚀 Deploy
+        runs-on: [self-hosted]
+        needs: [lint, typecheck, build]
+        if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+        steps:
+          - name: ⬇️ Checkout repo
+            uses: actions/checkout@v4.1.1
+    
+          - name: Login to Docker Hub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+          - name: 🚀 Run Docker Compose on Production
+            env:
+              APP_ENV: ${{ secrets.APP_ENV }}
+            run: |
+              docker-compose -f docker-compose.yml up -d --build
