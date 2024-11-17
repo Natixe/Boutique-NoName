@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "format": "npx prettier --write **/*.{js,jsx,md}",
     "format:check": "npx prettier --check **/*.{js,jsx,md}",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

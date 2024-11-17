@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AgCharts } from 'ag-charts-react';
 import './DashBoard.css';
-import { backend_url, currency } from "../../App";
+import { backend_url } from "../../App";
 
 
 const DashBoard = () => {
@@ -155,7 +155,6 @@ const DashBoard = () => {
     }
     transformedData[date][item.category] = item.revenue;
   });
-  const finalData = Object.values(transformedData);
 
   const categories = ['women', 'men', 'kids'];
 
