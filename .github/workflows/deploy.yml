@@ -62,6 +62,6 @@ jobs:
         env:
           APP_ENV: ${{ secrets.APP_ENV }}
         run: |
-          docker pull varkoff/deployed-app:production
-          docker run -p 3000:3000 -d varkoff/deployed-app:production
+          docker pull natixe28/boutique-noname:production
+          docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 -d natixe28/boutique-noname:production
           docker system prune --all --volumes --force
