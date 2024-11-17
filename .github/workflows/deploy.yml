@@ -52,6 +52,16 @@ jobs:
       - name: 🗂️ Liste des fichiers
         run: ls -la
 
+      - name: Générer le fichier .env
+        run: |
+          echo "PORT_API=${{ secrets.PORT_API }}" >> .env
+          echo "PGHOST=${{ secrets.PGHOST }}" >> .env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> .env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> .env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> .env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> .env
+          echo "APP_ENV=${{ secrets.APP_ENV }}" >> .env
+
       - name: 📦 Copier les fichiers
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -67,17 +77,7 @@ jobs:
           command_timeout: 10m
           use_insecure_cipher: false
           rm: false
-          debug: true  # Activer le mode debug pour plus de détails
-
-      - name: Générer le fichier .env
-        run: |
-          echo "PORT_API=${{ secrets.PORT_API }}" >> .env
-          echo "PGHOST=${{ secrets.PGHOST }}" >> .env
-          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> .env
-          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> .env
-          echo "PGPORT=${{ secrets.PGPORT }}" >> .env
-          echo "PGUSER=${{ secrets.PGUSER }}" >> .env
-          echo "APP_ENV=${{ secrets.APP_ENV }}" >> .env
+          debug: true
 
       - name: 🔍 Vérifier les permissions des fichiers
         run: |
