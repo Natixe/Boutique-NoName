@@ -79,27 +79,13 @@ jobs:
           echo "Fichiers à transférer :"
           ls -la docker-compose.yml .env
 
-      - name: 🚀 Transférer les fichiers au VPS
-        uses: appleboy/scp-action@v0.1.7  # Utilisez une version plus récente
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: |
-            ./docker-compose.yml
-            ./.env
-          target: /home/${{ secrets.VPS_USER }}/Boutique-NoName/
-          port: 22
-          timeout: 30s
-          command_timeout: 10m
-          use_insecure_cipher: false
-          rm: false
-          debug: true
-          strip_components: 0
-          overwrite: true
+      - name: 🚀 Transférer les fichiers au VPS via SCP
+        run: |
+          scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./docker-compose.yml ./.env ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USER }}/Boutique-NoName/
+        shell: bash
 
       - name: 🚀 Run Docker Compose on Production
-        uses: appleboy/ssh-action@v0.1.3
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
