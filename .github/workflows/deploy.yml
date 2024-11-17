@@ -79,7 +79,7 @@ jobs:
             pwd
             ls -la
             cat docker-compose.yml
-            cat .en
+            cat .env
             
       - name: 🔍 Vérifier les permissions des fichiers
         run: |
@@ -90,7 +90,7 @@ jobs:
         run: |
           echo "Répertoire actuel : $(pwd)"
           ls -la
-          
+
       - name: 🚀 Transférer les fichiers vers le serveur
         uses: appleboy/scp-action@v0.1.7
         with:
