@@ -92,12 +92,12 @@ jobs:
 
       - name: 🔍 Vérifier les permissions des fichiers
         run: |
-          ls -la /home/user/docker-compose.yml
-          ls -la /home/user/.env
+          ls -la /home/user/deploy_files/docker-compose.yml
+          ls -la /home/user/deploy_files/.env
 
       - name: 🚀 Lancer Docker Compose en Production
         run: |
-          cd /home/user/
+          cd /home/user/deploy_files/
           docker-compose pull
           docker-compose down
           docker-compose up -d --remove-orphans
