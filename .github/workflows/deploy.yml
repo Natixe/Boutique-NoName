@@ -72,7 +72,11 @@ jobs:
           else
             echo "Erreur : le fichier .env n'existe pas."
             exit 1
-          fi
+
+      - name: 📂 Afficher les fichiers à transférer
+        run: |
+          echo "Fichiers à transférer :"
+          ls -la docker-compose.yml .env
 
       - name: 🚀 Transférer les fichiers au VPS
         uses: appleboy/scp-action@v0.1.7  # Utilisez une version plus récente
@@ -81,8 +85,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: |
-            docker-compose.yml
-            .env
+            ./docker-compose.yml
+            ./.env
           target: /home/${{ secrets.VPS_USER }}/Boutique-NoName/
           port: 22
           timeout: 30s
