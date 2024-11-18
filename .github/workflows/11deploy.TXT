@@ -1,0 +1,99 @@
+name: 🚀 Déploiement
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: ⬣ ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛑 Annuler les exécutions précédentes
+        uses: styfle/cancel-workflow-action@0.12.1
+
+      - name: ⬇️ Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer les dépendances
+        run: npm install
+
+      - name: 🔬 Linter le code
+        run: npm run lint
+
+  build:
+    name: 🐳 Build
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+
+  deploy:
+    name: Deploy React App
+    runs-on: ubuntu-latest
+    needs: [lint, build]
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up environment variables
+        run: |
+          echo "PORT_API=${{ secrets.PORT_API }}" >> .env
+          echo "PGHOST=${{ secrets.PGHOST }}" >> .env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> .env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> .env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> .env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> .env
+          echo "APP_ENV=${{ secrets.APP_ENV }}" >> .env
+          
+      - name: Verify files
+        run: |
+          if [ -f ./docker-compose.yml ]; then
+            echo "Le fichier docker-compose.yml existe."
+          else
+            echo "Le fichier docker-compose.yml est manquant."
+            exit 1
+          fi
+
+          if [ -f ./.env ]; then
+            echo "Le fichier .env existe."
+          else
+            echo "Le fichier .env est manquant."
+            exit 1
+          fi
+
+      - name: Transfer files via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          # Si vous utilisez une clé avec phrase secrète, ajoutez la ligne suivante
+          # passphrase: ${{ secrets.PASSPHRASE }}
+          port: 22
+          source: docker-compose.yml,.env
+          target: /home/user/
+          debug: true
+
+      - name: Deploy with Docker Compose
+        run: |
+          ssh -o StrictHostKeyChecking=no user@${{ secrets.HOST }} << 'EOF'
+            cd /home/user/
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d --remove-orphans
+          EOF
