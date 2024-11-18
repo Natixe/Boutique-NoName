@@ -1,7 +1,7 @@
 apps:
   - name: "main-app"
     script: "npm"
-    args: "run start"
+    args: "run start-prod"
     cwd: /app
   - name: "admin-app"
     script: "npm"

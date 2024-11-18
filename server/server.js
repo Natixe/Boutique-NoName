@@ -18,7 +18,6 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-const { PORT_API } = process.env;
 
 app.use(express.json());
 
@@ -560,7 +559,7 @@ app.post('/api/cart/update', async (req, res) => {
 });
 
 // Démarrer le serveur
-app.listen(PORT_API, '0.0.0.0', () => {
-  console.log(`Serveur en cours d'exécution sur le port ${PORT_API}`);
+app.listen(process.env.PORT_API, '0.0.0.0', () => {
+  console.log(`Serveur en cours d'exécution sur le port ${process.env.PORT_API || 8888}`);
   console.log('Initialisation du serveur...');
 });
