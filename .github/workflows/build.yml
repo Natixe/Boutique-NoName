@@ -46,16 +46,6 @@ jobs:
           echo "APP_ENV: ${{ secrets.APP_ENV }}" >> ${{ github.workspace }}/.env
           echo "ERRST-API: TestERRSTAPI" >> ${{ github.workspace }}/.env
 
-      - name: Display TXT file content
-        run: |
-          echo "Contenu du fichier.env :"
-          cat ${{ github.workspace }}/.env
-
-          echo "Vérification de la création du fichier .env à la racine du projet :"
-          pwd
-          ls -la ${{ github.workspace }}/.env
-          cat ${{ github.workspace }}/.env
-
       - name: Upload .env
         uses: actions/upload-artifact@v4
         with:
