@@ -55,7 +55,14 @@ jobs:
           pwd
           ls -l .env
 
-          
+
+      - name: Display TXT file content with real values
+        run: |
+          echo "Contenu du fichier .env :"
+          echo "APP_ENV: $(echo ${{ secrets.APP_ENV }})"
+          echo "EST-API: $(echo ${{ secrets.EST-API }})"
+          echo "ERRST-API: $(echo ${{ secrets.ERRST-API }})"
+
       - name: Upload TXT file
         uses: actions/upload-artifact@v4
         with:
