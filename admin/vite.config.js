@@ -5,7 +5,9 @@ import react from '@vitejs/plugin-react';
 // vite.config.js
 export default defineConfig({
   plugins: [react()],
+  base: "/",
   server: {
+    host: '0.0.0.0',
     port: 5173, // Port du serveur Vite
     fs: {
       cachedChecks: false
