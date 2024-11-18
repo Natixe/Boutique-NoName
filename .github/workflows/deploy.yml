@@ -59,8 +59,10 @@ jobs:
       - name: 🛑 Annuler les exécutions précédentes
         uses: styfle/cancel-workflow-action@0.12.1
         with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}    
-
+          access_token: ${{ secrets.GITHUB_TOKEN }}  
+      - name: Arrêter les conteneurs Docker existants
+        run: docker-compose down      
+  
       - name: 🚀 Run Docker Compose on Production
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
