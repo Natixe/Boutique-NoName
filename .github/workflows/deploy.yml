@@ -52,7 +52,13 @@ jobs:
       - name: 🚀 Run Docker Compose on Production
         if: ${{ github.ref == 'refs/heads/main' }}
         env:
-          APP_ENV: ${{ secrets.APP_ENV }}
+          APP_ENV: ${{ secrets.APP_ENV }},
+          PORT_API: ${{ secrets.PORT_API }}
+          PGHOST: ${{ secrets.PGHOST }}
+          PGDATABASE: ${{ secrets.PGDATABASE }}
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          PGPORT: ${{ secrets.PGPORT }}
+          PGUSER: ${{ secrets.PGUSER }}
         run: |
           docker pull natixe28/boutique-noname:production 
           docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 natixe28/boutique-noname:production 
