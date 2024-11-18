@@ -59,9 +59,9 @@ jobs:
       - name: Display TXT file content with real values
         run: |
           echo "Contenu du fichier .env :"
-          echo "APP_ENV: $(echo ${{ secrets.APP_ENV }})"
-          echo "EST-API: $(echo ${{ secrets.EST-API }})"
-          echo "ERRST-API: $(echo ${{ secrets.ERRST-API }})"
+          echo "PORT_API: $(echo ${{ secrets.PORT_API }})"
+          echo "PGHOST: $(echo ${{ secrets.PGHOST }})"
+          echo "PGPASSWORD: $(echo ${{ secrets.PGPASSWORD }})"
 
       - name: Upload TXT file
         uses: actions/upload-artifact@v4
