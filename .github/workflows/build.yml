@@ -35,32 +35,32 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "PORT_API: ${{ secrets.PORT_API }}," > $GITHUB_WORKSPACE/.env
-          echo "PGHOST: ${{ secrets.PGHOST }}" >> $GITHUB_WORKSPACE/.env
-          echo "PGDATABASE: ${{ secrets.PGDATABASE }}" >> $GITHUB_WORKSPACE/.env
-          echo "PGPASSWORD: ${{ secrets.PGPASSWORD }}" >> $GITHUB_WORKSPACE/.env
-          echo "PGPORT: ${{ secrets.PGPORT }}" >> $GITHUB_WORKSPACE/.env
-          echo "PGUSER: ${{ secrets.PGUSER }}" >> $GITHUB_WORKSPACE/.env
-          echo "DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}" >> $GITHUB_WORKSPACE/.env
-          echo "DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}" >> $GITHUB_WORKSPACE/.env
-          echo "APP_ENV: ${{ secrets.APP_ENV }}" >> $GITHUB_WORKSPACE/.env
-          echo "ERRST-API: TestERRSTAPI" >> .env
+          echo "PORT_API: ${{ secrets.PORT_API }}," > ${{ github.workspace }}/.env
+          echo "PGHOST: ${{ secrets.PGHOST }}" >> ${{ github.workspace }}/.env
+          echo "PGDATABASE: ${{ secrets.PGDATABASE }}" >> ${{ github.workspace }}/.env
+          echo "PGPASSWORD: ${{ secrets.PGPASSWORD }}" >> ${{ github.workspace }}/.env
+          echo "PGPORT: ${{ secrets.PGPORT }}" >> ${{ github.workspace }}/.env
+          echo "PGUSER: ${{ secrets.PGUSER }}" >> ${{ github.workspace }}/.env
+          echo "DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}" >> ${{ github.workspace }}/.env
+          echo "DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}" >> ${{ github.workspace }}/.env
+          echo "APP_ENV: ${{ secrets.APP_ENV }}" >> ${{ github.workspace }}/.env
+          echo "ERRST-API: TestERRSTAPI" >> ${{ github.workspace }}/.env
 
       - name: Display TXT file content
         run: |
           echo "Contenu du fichier.env :"
-          cat $GITHUB_WORKSPACE/.env
+          cat ${{ github.workspace }}/.env
 
           echo "Vérification de la création du fichier .env à la racine du projet :"
           pwd
-          ls -la $GITHUB_WORKSPACE/.env
-          cat $GITHUB_WORKSPACE/.env
+          ls -la ${{ github.workspace }}/.env
+          cat ${{ github.workspace }}/.env
 
       - name: Upload .env
         uses: actions/upload-artifact@v4
         with:
           name: .env
-          path: $GITHUB_WORKSPACE/.env
+          path: ${{ github.workspace }}/.env
 
       - name: Build project
         run: npm run build
