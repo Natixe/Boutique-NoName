@@ -51,7 +51,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
+
       - name: Télécharger le fichier .env
         uses: actions/download-artifact@v4
         with:
@@ -66,11 +66,10 @@ jobs:
           else
             echo "Aucun conteneur existant trouvé."
           fi
-         
   
       - name: 🚀 Run Docker Compose on Production
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           docker pull natixe28/boutique-noname:production 
-          docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 natixe28/boutique-noname:production 
+          docker run -p 3000:3000 -p 5173:5173 -p 8888:8888 -d natixe28/boutique-noname:production 
           docker system prune --all --volumes --force
