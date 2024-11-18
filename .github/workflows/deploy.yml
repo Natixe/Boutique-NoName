@@ -56,6 +56,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Télécharger le fichier .env
+        uses: actions/download-artifact@v4
+        with:
+          name: .env
+          path: .
+
       - name: 🛑 Annuler les exécutions précédentes
         uses: styfle/cancel-workflow-action@0.12.1
         with:
