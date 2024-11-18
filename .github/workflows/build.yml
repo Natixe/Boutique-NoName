@@ -33,41 +33,34 @@ jobs:
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
 
-      - name: Create TXT file
+      - name: Create .env file
         run: |
-          echo "PORT_API: ${{ secrets.PORT_API }}," > .env
-          echo "PGHOST: ${{ secrets.PGHOST }}" >> .env
-          echo "PGDATABASE: ${{ secrets.PGDATABASE }}" >> .env
-          echo "PGPASSWORD: ${{ secrets.PGPASSWORD }}" >> .env
-          echo "PGPORT: ${{ secrets.PGPORT }}" >> .env
-          echo "PGUSER: ${{ secrets.PGUSER }}" >> .env
-          echo "DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}" >> .env
-          echo "DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}" >> .env
-          echo "APP_ENV: ${{ secrets.APP_ENV }}" >> .env
-
-
+          echo "PORT_API: ${{ secrets.PORT_API }}," > $GITHUB_WORKSPACE/.env
+          echo "PGHOST: ${{ secrets.PGHOST }}" >> $GITHUB_WORKSPACE/.env
+          echo "PGDATABASE: ${{ secrets.PGDATABASE }}" >> $GITHUB_WORKSPACE/.env
+          echo "PGPASSWORD: ${{ secrets.PGPASSWORD }}" >> $GITHUB_WORKSPACE/.env
+          echo "PGPORT: ${{ secrets.PGPORT }}" >> $GITHUB_WORKSPACE/.env
+          echo "PGUSER: ${{ secrets.PGUSER }}" >> $GITHUB_WORKSPACE/.env
+          echo "DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}" >> $GITHUB_WORKSPACE/.env
+          echo "DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}" >> $GITHUB_WORKSPACE/.env
+          echo "APP_ENV: ${{ secrets.APP_ENV }}" >> $GITHUB_WORKSPACE/.env
+          echo "ERRST-API: TestERRSTAPI" >> .env
 
       - name: Display TXT file content
         run: |
           echo "Contenu du fichier.env :"
-          cat .env
-          echo "Localisation du fichier .env :"
+          cat $GITHUB_WORKSPACE/.env
+
+          echo "Vérification de la création du fichier .env à la racine du projet :"
           pwd
-          ls -l .env
+          ls -la $GITHUB_WORKSPACE/.env
+          cat $GITHUB_WORKSPACE/.env
 
-
-      - name: Display TXT file content with real values
-        run: |
-          echo "Contenu du fichier .env :"
-          echo "PORT_API: $(echo ${{ secrets.PORT_API }})"
-          echo "PGHOST: $(echo ${{ secrets.PGHOST }})"
-          echo "PGPASSWORD: $(echo ${{ secrets.PGPASSWORD }})"
-
-      - name: Upload TXT file
+      - name: Upload .env
         uses: actions/upload-artifact@v4
         with:
           name: .env
-          path: .env
+          path: $GITHUB_WORKSPACE/.env
 
       - name: Build project
         run: npm run build
