@@ -41,5 +41,5 @@ RUN chmod +x /app/start.sh
 # Exposer les ports pour les deux applications
 EXPOSE 3000 5173 8888
 
-# Démarrer les deux applications
+# Démarrer les deux application
 CMD ["pm2-runtime", "process.yml"]
