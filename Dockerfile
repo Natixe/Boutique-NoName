@@ -1,5 +1,8 @@
 FROM --platform=amd64 node:22-alpine3.20 AS build
 
+# Installer PM2 globalement
+RUN npm install -g pm2
+
 # Définir le répertoire de travail
 WORKDIR /app
 
@@ -16,6 +19,9 @@ RUN npm run build
 
 # Installer les dépendances de l'application admin
 WORKDIR /app/admin
+COPY package*.json ./
+COPY . .
+
 RUN npm install
 
 
@@ -29,9 +35,6 @@ WORKDIR /app
 COPY --from=build /app ./
 COPY --from=build /app/start.sh ./
 
-# Installer PM2 globalement et créer un utilisateur non privilégié
-RUN npm install -g pm2
-
 # Ajouter les permissions d'exécution à start.sh
 RUN chmod +x /app/start.sh
 
@@ -39,4 +42,4 @@ RUN chmod +x /app/start.sh
 EXPOSE 3000 5173 8888
 
 # Démarrer les deux applications
-ENTRYPOINT ["./start.sh"]
+CMD ["pm2-runtime", "process.yml"]

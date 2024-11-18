@@ -558,8 +558,11 @@ app.post('/api/cart/update', async (req, res) => {
   }
 });
 
+const port = process.env.PORT_API || 8888;
+const host = '0.0.0.0';
+
 // Démarrer le serveur
-app.listen(process.env.PORT_API, '0.0.0.0', () => {
+app.listen(port, host, () => {
   console.log(`Serveur en cours d'exécution sur le port ${process.env.PORT_API || 8888}`);
   console.log('Initialisation du serveur...');
 });
