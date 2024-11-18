@@ -3,9 +3,10 @@ services:
   db:
     image: postgres:16
     environment:
-      POSTGRES_USER: ${PGUSER}
-      POSTGRES_PASSWORD: ${PGPASSWORD}
-      POSTGRES_DB: ${PGDATABASE}
+      PPGUSER: ${{ secrets.PGUSER }}
+      PGPASSWORD: ${{ secrets.PGPASSWORD }}
+      PGDATABASE: ${{ secrets.PGDATABASE }}
+      PGHOST: ${{ secrets.PGHOST }}
     ports:
       - "5432:5432"
     volumes:
