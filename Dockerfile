@@ -33,7 +33,7 @@ WORKDIR /app
 
 # Copier les fichiers depuis l'étape de build
 COPY --from=build /app ./
-COPY --from=build /app/admin ./
+COPY --from=build /app/admin ./admin
 COPY --from=build /app/start.sh ./
 
 # Ajouter les permissions d'exécution à start.sh
