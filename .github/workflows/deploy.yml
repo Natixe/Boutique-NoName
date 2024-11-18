@@ -42,6 +42,11 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main'}}
 
     steps:
+      - name: 🛑 Annuler les exécutions précédentes
+        uses: styfle/cancel-workflow-action@0.12.1
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
@@ -50,6 +55,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 🛑 Annuler les exécutions précédentes
+        uses: styfle/cancel-workflow-action@0.12.1
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}    
 
       - name: 🚀 Run Docker Compose on Production
         if: ${{ github.ref == 'refs/heads/main' }}
