@@ -17,7 +17,7 @@ RUN npm run build
 # Installer les dépendances de l'application admin
 WORKDIR /app/admin
 RUN npm install
-RUN npm run build
+
 
 # Étape final
 FROM node:22-alpine3.20

@@ -26,12 +26,41 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           logout: true
-          
+
       - name: ⎔ Setup node
         uses: actions/setup-node@v4
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
+
+      - name: Create TXT file
+        run: |
+          echo "PORT_API: ${{ secrets.PORT_API }}," > .env
+          echo "PGHOST: ${{ secrets.PGHOST }}" >> .env
+          echo "PGDATABASE: ${{ secrets.PGDATABASE }}" >> .env
+          echo "PGPASSWORD: ${{ secrets.PGPASSWORD }}" >> .env
+          echo "PGPORT: ${{ secrets.PGPORT }}" >> .env
+          echo "PGUSER: ${{ secrets.PGUSER }}" >> .env
+          echo "DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}" >> .env
+          echo "DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}" >> .env
+          echo "APP_ENV: ${{ secrets.APP_ENV }}" >> .env
+
+
+
+      - name: Display TXT file content
+        run: |
+          echo "Contenu du fichier.env :"
+          cat .env
+          echo "Localisation du fichier .env :"
+          pwd
+          ls -l .env
+
+          
+      - name: Upload TXT file
+        uses: actions/upload-artifact@v4
+        with:
+          name: .env
+          path: .env
 
       - name: Build project
         run: npm run build
