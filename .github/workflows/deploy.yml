@@ -9,7 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
-
+  actions: write
 
 jobs:
   lint:
@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: 🛑 Annuler les exécutions précédentes
         uses: styfle/cancel-workflow-action@0.12.1
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: ⬇️ Récupérer le dépôt
         uses: actions/checkout@v4
