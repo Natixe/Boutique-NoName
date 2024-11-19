@@ -6,16 +6,16 @@ WORKDIR /app
 # Installer les dépendances de l'application principale
 COPY package*.json ./
 COPY process.yml ./
-COPY . .
 
 RUN npm install 
+COPY . .
 RUN npm run build
 
 WORKDIR /app/admin
 COPY package*.json ./
-COPY . .
 
 RUN npm install
+COPY . .
 RUN npm run build
 
 

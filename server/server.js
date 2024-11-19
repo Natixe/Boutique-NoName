@@ -58,23 +58,8 @@ pool.connect((err, client, release) => {
 });
 
 
-// Exemple de route API
 app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running' });
-});
-
-// Servir les fichiers statiques de main-app
-app.use(express.static(path.join(__dirname, 'dist')));
-
-// Servir les fichiers statiques de admin-app
-app.use('/admin', express.static(path.join(__dirname, 'admin', 'dist')));
-
-// Servir les fichiers statiques pour /assets
-app.use('/assets', express.static(path.join(__dirname, '../dist/assets')));
-
-// Servir l'index.html pour les routes de l'admin
-app.get('/admin/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../admin', 'index.html'));
 });
 
 // Route pour les images
@@ -588,6 +573,16 @@ app.post('/api/cart/update', async (req, res) => {
 });
 
 
+// Servir les fichiers statiques de main-app
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Servir les fichiers statiques pour /assets
+app.use('/assets', express.static(path.join(__dirname, '../dist/assets')));
+
+// Servir l'index.html pour les routes de l'admin
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../admin', 'index.html'));
+});
 
 // Servir l'index.html pour les routes non gérées
 app.get('*', (req, res) => {
