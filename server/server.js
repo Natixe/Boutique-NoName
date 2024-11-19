@@ -48,6 +48,16 @@ console.log('PGDATABASE:', process.env.PGDATABASE);
 console.log('PGPASSWORD:', process.env.PGPASSWORD);
 console.log('PGPORT:', process.env.PGPORT);
 
+// Vérifiez la connexion à la base de données
+pool.connect((err, client, release) => {
+  if (err) {
+    return console.error('Erreur lors de la connexion à la base de données', err);
+  }
+  console.log('Connecté à la base de données PostgreSQL');
+  release();
+});
+
+
 // Exemple de route API
 app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running' });
