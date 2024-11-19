@@ -53,23 +53,17 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running' });
 });
 
-// Servir les fichiers statiques de main-app
-app.use(express.static(path.join(__dirname, '../dst')));
-
-// Servir les fichiers statiques de admin-app
-app.use('/admin', express.static(path.join(__dirname, '../dmin', 'dist')));
-
 // Servir les fichiers statiques pour /assets
 app.use('/assets', express.static(path.join(__dirname, '../dist/assets')));
 
 // Servir l'index.html pour les routes de l'admin
 app.get('/admin/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../admin/dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../admin', 'index.html'));
 });
 
 // Servir l'index.html pour les routes non gérées
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../', 'index.html'));
 });
 
 // Route pour les images
