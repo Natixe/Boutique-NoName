@@ -10,8 +10,6 @@ services:
     image: natixe28/boutique-noname:production
     depends_on:
       - db
-    env_file:
-      - .env
     container_name: boutique-noname
     restart: always
     ports:

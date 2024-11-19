@@ -6,11 +6,11 @@
   "type": "module",
   "main": "server/server.js",
   "scripts": {
+    "start-prod": "node server/server.js",
     "server-dev": "nodemon server/server.js",
     "server-prod": "node server/server.js",
     "client-dev": "vite",
     "start": "concurrently \"npm run server-dev\" \"npm run client-dev\" --host 0.0.0.0",
-    "start-prod": "concurrently \"npm run server-prod\" \"npm run client-dev\" --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
     "format": "npx prettier --write **/*.{js,jsx,md}",

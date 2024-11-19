@@ -19,14 +19,17 @@ WORKDIR /app/admin
 COPY package*.json ./
 COPY . .
 
+
+# Installer toutes les dépendances sans --production
 RUN npm install
 
+# Construire l'application admin
+RUN npm run build
 
 # Étape final
 FROM node:22-alpine3.20
 
-# Installer PM2 globalement
-RUN npm install -g pm2
+
 
 # Revenir au dossier principal
 WORKDIR /app
@@ -38,6 +41,9 @@ COPY --from=build /app/start.sh ./
 
 # Ajouter les permissions d'exécution à start.sh
 RUN chmod +x /app/start.sh
+
+# Installer PM2 globalement
+RUN npm install -g pm2
 
 # Exposer les ports pour les deux applications
 EXPOSE 3000 5173 8888

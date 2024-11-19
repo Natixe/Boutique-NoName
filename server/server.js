@@ -558,6 +558,22 @@ app.post('/api/cart/update', async (req, res) => {
   }
 });
 
+// Servir les fichiers statiques de main-app
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Servir les fichiers statiques de admin-app
+app.use('/admin', express.static(path.join(__dirname, 'admin', 'dist')));
+
+// Servir l'index.html pour les routes de l'admin
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin', 'dist', 'index.html'));
+});
+
+// Servir l'index.html pour les routes non gérées
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
 const port = process.env.PORT_API || 8888;
 const host = '0.0.0.0';
 

@@ -1,9 +1,5 @@
 apps:
   - name: "main-app"
-    script: "npm"
-    args: "run start-prod"
+    script: "node"
+    args: "server/server.js"
     cwd: /app
-  - name: "admin-app"
-    script: "npm"
-    args: "run start-prod"
-    cwd: /app/admin
