@@ -12,8 +12,6 @@ services:
       - db
     container_name: boutique-noname
     restart: always
-    ports:
-      - "8888:8888"
   caddy:
     image: caddy:latest
     ports:
