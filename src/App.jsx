@@ -12,7 +12,7 @@ import men_banner from "./Components/Assets/banner_mens.png";
 import kid_banner from "./Components/Assets/banner_kids.png";
 import LoginSignup from "./Pages/LoginSignup.jsx";
 
-export const backend_url = `http://localhost:8888/api`;
+export const backend_url = `/api`;
 export const currency = '$';
 
 function App() {

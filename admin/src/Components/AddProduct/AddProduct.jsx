@@ -13,7 +13,7 @@ const AddProduct = () => {
     old_price: ""
   });
 
-  const backend_url = 'http://localhost:8888/api';
+  const backend_url = '/api';
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
