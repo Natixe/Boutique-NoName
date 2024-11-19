@@ -63,6 +63,12 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running' });
 });
 
+// Servir les fichiers statiques de main-app
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Servir les fichiers statiques de admin-app
+app.use('/admin', express.static(path.join(__dirname, 'admin', 'dist')));
+
 // Servir les fichiers statiques pour /assets
 app.use('/assets', express.static(path.join(__dirname, '../dist/assets')));
 
