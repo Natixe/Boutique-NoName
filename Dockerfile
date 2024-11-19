@@ -31,6 +31,11 @@ COPY --from=build /app/admin/dist ./admin
 COPY --from=build /app/process.yml ./
 COPY --from=build /app/start.sh ./
 COPY --from=build /app/server ./server
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/admin/package*.json ./admin
+
+# Installer uniquement les dépendances de production
+RUN npm install --only=production
 
 # Ajouter les permissions d'exécution à start.sh
 RUN chmod +x /app/start.sh
