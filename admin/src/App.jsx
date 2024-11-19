@@ -9,11 +9,9 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <div>
-          <Navbar />
-          <Admin />
-          <Footer />
-        </div>
+        <Navbar />
+        <Admin />
+        <Footer />
       </BrowserRouter>
     </>
   );
