@@ -77,11 +77,6 @@ app.get('/admin/*', (req, res) => {
   res.sendFile(path.join(__dirname, '../admin', 'index.html'));
 });
 
-// Servir l'index.html pour les routes non gérées
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../', 'index.html'));
-});
-
 // Route pour les images
 app.use('/api/images', express.static(path.join(__dirname, 'upload/images'), {
   setHeaders: (res) => {
@@ -590,6 +585,13 @@ app.post('/api/cart/update', async (req, res) => {
     console.error('Erreur lors de la mise à jour du panier:', error);
     res.status(500).json({ error: 'Erreur du serveur' });
   }
+});
+
+
+
+// Servir l'index.html pour les routes non gérées
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../', 'index.html'));
 });
 
 

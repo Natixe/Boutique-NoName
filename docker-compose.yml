@@ -4,6 +4,10 @@ services:
     image: postgres:16
     ports:
       - "5432:5432"
+    environment:
+      PGUSER: ${{ secrets.PGUSER }}
+      PGPASSWORD: ${{ secrets.PGPASSWORD }}
+      PGDATABASE: ${{ secrets.PGDATABASE }}
     volumes:
       - db-data:/var/lib/postgresql/data
   app:
@@ -12,14 +16,19 @@ services:
       - db
     container_name: boutique-noname
     restart: always
+    ports:
+      - "8888:8888" # Assurez-vous que ce port est exposé si nécessaire
   caddy:
     image: caddy:latest
     ports:
       - "80:80"
+      - "443:443" # Ajouter le port 443 pour HTTPS si vous utilisez un domaine
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+    depends_on:
+      - app
 volumes:
   db-data:
   caddy_data:
