@@ -30,6 +30,7 @@ COPY --from=build /app/dist ./
 COPY --from=build /app/admin/dist ./admin
 COPY --from=build /app/process.yml ./
 COPY --from=build /app/start.sh ./
+COPY --from=build /app/server ./
 
 # Ajouter les permissions d'exécution à start.sh
 RUN chmod +x /app/start.sh
