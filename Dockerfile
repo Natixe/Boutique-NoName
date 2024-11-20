@@ -1,4 +1,4 @@
-FROM --platform=amd64 node:22-alpine3.20 AS build
+FROM --platform=amd64 node:20-alpine AS build
 
 # Définir le répertoire de travail
 WORKDIR /app
@@ -20,10 +20,7 @@ RUN npm run build
 
 
 # Étape final
-FROM node:22-alpine3.20
-
-# Installer PM2 globalement
-RUN npm install -g pm2
+FROM node:20-alpine
 
 # Revenir au dossier principal
 WORKDIR /app
@@ -35,13 +32,14 @@ COPY --from=build /app/process.yml ./
 COPY --from=build /app/start.sh ./
 COPY --from=build /app/server ./server
 
-
 COPY --from=build /app/package*.json ./
 RUN npm install --only=production
 
-
 COPY --from=build /app/admin/package*.json ./admin
 RUN npm install --only=production
+
+# Installer PM2 globalement
+RUN npm install -g pm2
 
 # Ajouter les permissions d'exécution à start.sh
 RUN chmod +x /app/start.sh

@@ -5,9 +5,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      PGUSER: ${{ secrets.PGUSER }}
-      PGPASSWORD: ${{ secrets.PGPASSWORD }}
-      PGDATABASE: ${{ secrets.PGDATABASE }}
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
     volumes:
       - db-data:/var/lib/postgresql/data
   app:
