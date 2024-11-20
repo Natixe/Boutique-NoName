@@ -28,4 +28,7 @@ export default defineConfig({
       '@': './src', //  Définit un alias pour le répertoire src, permettant d'importer des modules plus facilement
     },
   },
+  build: {
+    outDir: 'dist', // Répertoire de sortie
+  },
 });

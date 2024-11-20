@@ -1,6 +1,15 @@
-body {
+* {
   margin: 0;
+  padding: 0;
   font-family: 'Poppins', sans-serif;
+}
+
+body {
   background: #F6F6F6;
   height: 100vh;
+}
+
+a {
+  text-decoration: none !important;
+  color: inherit;
 }
