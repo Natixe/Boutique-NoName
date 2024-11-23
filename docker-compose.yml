@@ -16,6 +16,10 @@ services:
       - db
     container_name: boutique-noname
     restart: always
+    environment:
+      - NODE_ENV=production
+    volumes:
+    - app-data:/app
     ports:
       - "8888:8888" # Assurez-vous que ce port est exposé si nécessaire
   caddy:
@@ -24,13 +28,15 @@ services:
       - "80:80"
       - "443:443" # Ajouter le port 443 pour HTTPS si vous utilisez un domaine
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
-      - ./app:/app  # Monte le répertoire app dans le conteneur Caddy
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - app-data:/app
     depends_on:
       - app
+
 volumes:
   db-data:
   caddy_data:
   caddy_config:
+  app-data:

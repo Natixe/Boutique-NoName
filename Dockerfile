@@ -1,42 +1,66 @@
-FROM --platform=amd64 node:20-alpine AS build
+# Étape de build de l'application principale
+FROM --platform=amd64 node:20-alpine AS build-main
 
 # Définir le répertoire de travail
 WORKDIR /app
 
-# Installer les dépendances de l'application principale
-COPY package*.json ./
-COPY process.yml ./
-
-RUN npm install 
 COPY . .
+
+RUN rm -rf admin
+
+# Installer les dépendances de l'application principale
+RUN npm install 
+
+# Construire l'application principale
 RUN npm run build
 
-WORKDIR /app/admin
-COPY package*.json ./
 
+# Étape de build de l'application admin
+FROM --platform=amd64 node:20-alpine AS build-admin
+
+# Définir le répertoire de travail
+WORKDIR /app/admin
+
+COPY admin/package*.json ./
+COPY admin/. .
+
+# Installer les dépendances de l'application admin
 RUN npm install
-COPY . .
+
+# Construire l'application admin
 RUN npm run build
 
 
 # Étape final
-FROM node:20-alpine
+FROM --platform=amd64 node:20-alpine
 
 # Revenir au dossier principal
 WORKDIR /app
 
-# Copier les fichiers depuis l'étape de build
-COPY --from=build /app/dist ./
-COPY --from=build /app/admin/dist ./admin
-COPY --from=build /app/process.yml ./
-COPY --from=build /app/start.sh ./
-COPY --from=build /app/server ./server
+# Copier les artefacts construits de l'application principale
+COPY --from=build-main /app/dist ./dist
+COPY --from=build-main /app/process.yml ./
+COPY --from=build-main /app/start.sh ./
+COPY --from=build-main /app/server ./server
 
-COPY --from=build /app/package*.json ./
-RUN npm install --only=production
+# Copier les artefacts construits de l'application admin
+COPY --from=build-admin /app/admin/dist ./admin/dist
 
-COPY --from=build /app/admin/package*.json ./admin
-RUN npm install --only=production
+
+
+
+COPY --from=build-main /app/package*.json ./
+WORKDIR /app
+RUN npm install
+
+
+COPY --from=build-admin /app/admin/package*.json ./admin/
+WORKDIR /app/admin
+RUN npm install 
+
+
+# Revenir au dossier principal
+WORKDIR /app
 
 # Installer PM2 globalement
 RUN npm install -g pm2

@@ -17,8 +17,6 @@ const __dirname = path.dirname(__filename);
 
 
 const app = express();
-
-
 app.use(express.json());
 
 const corsOptions = {
@@ -121,10 +119,6 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// ROOT API Route For Testing
-app.get("/api/", (req, res) => {
-  res.send("Root");
-});
 
 
 // Route de connexion
@@ -573,20 +567,31 @@ app.post('/api/cart/update', async (req, res) => {
 });
 
 
-// Servir les fichiers statiques de main-app
-app.use(express.static(path.join(__dirname, 'dist')));
-
-// Servir les fichiers statiques pour /assets
-app.use('/assets', express.static(path.join(__dirname, '../dist/assets')));
-
-// Servir l'index.html pour les routes de l'admin
-app.get('/admin/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../admin', 'index.html'));
+// ROOT API Route For Testing
+app.get("/api/", (req, res) => {
+  res.send("Root");
 });
 
-// Servir l'index.html pour les routes non gérées
+// Servir les fichiers statiques du frontend commercial
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// Servir les fichiers statiques du frontend admin
+app.use(express.static(path.join(__dirname, '../admin', 'dist')));
+
+// Gérer le routage côté client pour admin (SPA)
+app.get('/api/admin/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../admin', 'dist', 'index.html'));
+});
+
+// Gérer le routage côté client (SPA)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../', 'index.html'));
+  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+});
+
+// Gestion des erreurs
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Erreur du serveur');
 });
 
 
