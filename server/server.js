@@ -9,7 +9,6 @@ import helmet from 'helmet';
 import { fileURLToPath } from 'url';
 import cron from 'node-cron';
 
-
 const { Pool } = pkg;
 
 const __filename = fileURLToPath(import.meta.url);
@@ -573,7 +572,7 @@ app.get("/api/", (req, res) => {
 });
 
 // Servir les fichiers statiques du frontend commercial
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, '../dist')))
 
 // Servir les fichiers statiques du frontend admin
 app.use(express.static(path.join(__dirname, '../admin', 'dist')));
@@ -593,7 +592,6 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Erreur du serveur');
 });
-
 
 const port = process.env.PORT_API || 8888;
 const host = '0.0.0.0';

@@ -4,6 +4,8 @@ import './index.css'
 import App from './App.jsx'
 import ShopContextProvider from './Context/ShopContext';
 
+
+// Polyfill pour la génération de UUID
 if (!crypto.randomUUID) {
   crypto.randomUUID = function() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -17,7 +19,7 @@ if (!crypto.randomUUID) {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ShopContextProvider>
-    <App />
+      <App />
     </ShopContextProvider>
   </StrictMode>
 )
