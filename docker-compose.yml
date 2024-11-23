@@ -21,19 +21,21 @@ services:
     volumes:
     - app-data:/app
     ports:
-      - "8888:8888" # Assurez-vous que ce port est exposé si nécessaire
+      - "8888:8888"
+
+
   caddy:
     image: caddy:latest
+    container_name: caddy
     ports:
       - "80:80"
-      - "443:443" # Ajouter le port 443 pour HTTPS si vous utilisez un domaine
+      - "443:443"
     volumes:
       - caddy_data:/data
       - caddy_config:/config
       - ./Caddyfile:/etc/caddy/Caddyfile
       - app-data:/app
-    depends_on:
-      - app
+    restart: unless-stopped
 
 volumes:
   db-data:
