@@ -4,6 +4,7 @@ FROM --platform=amd64 node:20-alpine AS build-main
 # Définir le répertoire de travail
 WORKDIR /app
 
+COPY .env /app/.env
 COPY . .
 
 RUN rm -rf admin
