@@ -35,15 +35,15 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "PORT_API: ${{ secrets.PORT_API }}," > ${{ github.workspace }}/.env
-          echo "PGHOST: ${{ secrets.PGHOST }}" >> ${{ github.workspace }}/.env
-          echo "PGDATABASE: ${{ secrets.PGDATABASE }}" >> ${{ github.workspace }}/.env
-          echo "PGPASSWORD: ${{ secrets.PGPASSWORD }}" >> ${{ github.workspace }}/.env
-          echo "PGPORT: ${{ secrets.PGPORT }}" >> ${{ github.workspace }}/.env
-          echo "PGUSER: ${{ secrets.PGUSER }}" >> ${{ github.workspace }}/.env
-          echo "DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}" >> ${{ github.workspace }}/.env
-          echo "DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}" >> ${{ github.workspace }}/.env
-          echo "APP_ENV: ${{ secrets.APP_ENV }}" >> ${{ github.workspace }}/.env
+          echo "PORT_API=${{ secrets.PORT_API }}" > ${{ github.workspace }}/.env
+          echo "PGHOST=${{ secrets.PGHOST }}" >> ${{ github.workspace }}/.env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ${{ github.workspace }}/.env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ${{ github.workspace }}/.env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> ${{ github.workspace }}/.env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> ${{ github.workspace }}/.env
+          echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> ${{ github.workspace }}/.env
+          echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}" >> ${{ github.workspace }}/.env
+          echo "APP_ENV=${{ secrets.APP_ENV }}" >> ${{ github.workspace }}/.env
 
       - name: Upload .env
         uses: actions/upload-artifact@v4

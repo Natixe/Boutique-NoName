@@ -71,5 +71,5 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           docker pull natixe28/boutique-noname:production 
-          docker run -p 8888:8888 -d natixe28/boutique-noname:production 
+          docker run --env-file .env -p 8888:8888 -d natixe28/boutique-noname:production 
           docker system prune --all --volumes --force
