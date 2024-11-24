@@ -4,7 +4,6 @@ FROM --platform=amd64 node:20-alpine AS build-main
 # Définir le répertoire de travail
 WORKDIR /app
 
-COPY .env /app/.env
 COPY . .
 
 RUN rm -rf admin
@@ -43,17 +42,17 @@ COPY --from=build-main /app/dist ./dist
 COPY --from=build-main /app/process.yml ./
 COPY --from=build-main /app/start.sh ./
 COPY --from=build-main /app/server ./server
+COPY --from=build-main /app/.env ./ 
 
 # Copier les artefacts construits de l'application admin
 COPY --from=build-admin /app/admin/dist ./admin/dist
 
 
 
-
+# Copier les fichiers package.json et installer les dépendances
 COPY --from=build-main /app/package*.json ./
 WORKDIR /app
 RUN npm install
-
 
 COPY --from=build-admin /app/admin/package*.json ./admin/
 WORKDIR /app/admin
