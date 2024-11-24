@@ -76,7 +76,7 @@ const AddProduct = () => {
       }
 
       alert('Produit ajouté avec succès');
-      navigate('/listproduct');
+      navigate('/admin/listproduct');
     } catch (error) {
       console.error('Erreur:', error.message);
       alert(`Erreur: ${error.message}`);

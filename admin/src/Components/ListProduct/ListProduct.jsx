@@ -37,7 +37,7 @@ const ListProduct = () => {
     <div className="listproduct">
       <div className="HeadContainer">
       <h1>All Products List</h1>
-      <Link to='/addproduct' style={{ textDecoration: 'none' }}>
+      <Link to='/admin/addproduct' style={{ textDecoration: 'none' }}>
         <div className="add-product">
           <img src={add_product_icon} alt="" />
           <p>Add Product</p>

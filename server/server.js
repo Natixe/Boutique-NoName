@@ -578,7 +578,7 @@ app.use(express.static(path.join(__dirname, '../dist')))
 app.use(express.static(path.join(__dirname, '../admin', 'dist')));
 
 // Gérer le routage côté client pour admin (SPA)
-app.get('/api/admin/', (req, res) => {
+app.get('/admin/', (req, res) => {
   res.sendFile(path.join(__dirname, '../admin', 'dist', 'index.html'));
 });
 
