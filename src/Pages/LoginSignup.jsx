@@ -12,7 +12,7 @@ const LoginSignup = () => {
 
   const login = async () => {
     let dataObj;
-    await fetch('http://localhost:8888/api/login', {
+    await fetch('/api/login', {
       method: 'POST',
       headers: {
         Accept:'application/form-data',
@@ -35,7 +35,7 @@ const LoginSignup = () => {
 
   const signup = async () => {
     let dataObj;
-    await fetch('http://localhost:8888/api/signup', {
+    await fetch('/api/signup', {
       method: 'POST',
       headers: {
         Accept:'application/form-data',

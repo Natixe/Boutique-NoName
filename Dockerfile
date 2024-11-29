@@ -7,6 +7,7 @@ WORKDIR /app
 COPY . .
 
 RUN rm -rf admin
+COPY server/upload/images ./upload/images
 
 # Installer les dépendances de l'application principale
 RUN npm install 
@@ -23,9 +24,10 @@ WORKDIR /app/admin
 
 COPY admin/package*.json ./
 COPY admin/. .
-
 # Installer les dépendances de l'application admin
 RUN npm install
+
+
 
 # Construire l'application admin
 RUN npm run build
@@ -43,6 +45,7 @@ COPY --from=build-main /app/process.yml ./
 COPY --from=build-main /app/start.sh ./
 COPY --from=build-main /app/server ./server
 COPY --from=build-main /app/.env ./ 
+COPY --from=build-main /app/upload/images ./server/upload/images
 
 # Copier les artefacts construits de l'application admin
 COPY --from=build-admin /app/admin/dist ./admin/dist

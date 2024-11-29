@@ -11,10 +11,10 @@ const Shop = () => {
   const [newcollection, setNewCollection] = useState([]);
 
   const fetchInfo = () => { 
-    fetch('http://localhost:8888/api/popularinwomen') 
+    fetch('/api/popularinwomen') 
             .then((res) => res.json()) 
             .then((data) => setPopular(data))
-    fetch('http://localhost:8888/api/newcollections') 
+    fetch('/api/newcollections') 
             .then((res) => res.json()) 
             .then((data) => setNewCollection(data))
     }

@@ -18,10 +18,14 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(express.json());
 
+// Configure Express pour faire confiance au proxy
+app.set('trust proxy', true);
+
 const corsOptions = {
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: ['https://freepbyh.com', 'http://localhost:8888'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 };
 app.use(cors(corsOptions));
 app.use(helmet({
@@ -39,11 +43,6 @@ const pool = new Pool({
   },
 });
 
-console.log('PGUSER:', process.env.PGUSER);
-console.log('PGHOST:', process.env.PGHOST);
-console.log('PGDATABASE:', process.env.PGDATABASE);
-console.log('PGPASSWORD:', process.env.PGPASSWORD);
-console.log('PGPORT:', process.env.PGPORT);
 
 // Vérifiez la connexion à la base de données
 pool.connect((err, client, release) => {
@@ -445,26 +444,10 @@ app.get('/api/revenue-by-category', async (req, res) => {
   }
 });
 
-//cron.schedule('0 */2 * * *', async () => {
-cron.schedule('*/1 * * * *', async () => {
 
-  try {
-    // Récupérer le nombre d'utilisateurs actifs dans les 2 dernières heures
-    const result = await pool.query(`
-      SELECT COUNT(*) AS user_count FROM users WHERE last_active >= NOW() - INTERVAL '2 HOURS'
-    `);
-    const userCount = parseInt(result.rows[0].user_count);
 
-    // Insérer les données dans la table `active_users`
-    await pool.query(`
-      INSERT INTO active_users (timestamp, user_count) VALUES (NOW(), $1)
-    `, [userCount]);
 
-    console.log(`Tâche cron: ${userCount} utilisateurs actifs enregistrés à ${new Date()}`);
-  } catch (error) {
-    console.error('Erreur lors de l\'enregistrement des utilisateurs actifs:', error.message);
-  }
-});
+
 
 cron.schedule('*/1 * * * *', async () => {
   try {
@@ -473,10 +456,13 @@ cron.schedule('*/1 * * * *', async () => {
       SELECT COUNT(DISTINCT ip_address) AS visit_count FROM visits_log WHERE timestamp >= NOW() - INTERVAL '30 MINUTES'
     `);
     const visitCount = parseInt(result.rows[0].visit_count);
-
+    
+    console.log(`Nombre de visites uniques: ${visitCount}`);
     // Insérer les données dans la table `visits`
     await pool.query(`
       INSERT INTO visits (visit_date, visit_count) VALUES (NOW(), $1)
+      ON CONFLICT (visit_date) 
+      DO UPDATE SET visit_count = visits.visit_count + EXCLUDED.visit_count
     `, [visitCount]);
 
     console.log(`Tâche cron: ${visitCount} visites enregistrées à ${new Date()}`);
@@ -484,34 +470,6 @@ cron.schedule('*/1 * * * *', async () => {
     console.error('Erreur lors de l\'enregistrement des visites:', error.message);
   }
 });
-
-cron.schedule('*/1 * * * *', async () => {
-  try {
-    // Compter les paniers en attente
-    const pendingCartsResult = await pool.query(`
-      SELECT COUNT(*) AS pending_count FROM carts WHERE status = 'pending'
-    `);
-    const pendingCount = parseInt(pendingCartsResult.rows[0].pending_count);
-
-    // Compter les paniers finalisés dans les 30 dernières minutes
-    const completedCartsResult = await pool.query(`
-      SELECT COUNT(*) AS completed_count FROM carts WHERE status = 'completed' AND updated_at >= NOW() - INTERVAL '30 MINUTES'
-    `);
-    const completedCount = parseInt(completedCartsResult.rows[0].completed_count);
-
-    // Insérer les données dans la table `cart_stats`
-    await pool.query(`
-      INSERT INTO cart_stats (timestamp, pending_carts, completed_carts) VALUES (NOW(), $1, $2)
-    `, [pendingCount, completedCount]);
-
-    console.log(`Tâche cron: Paniers enregistrés à ${new Date()}`);
-  } catch (error) {
-    console.error('Erreur lors de l\'enregistrement des statistiques de paniers:', error.message);
-  }
-});
-
-// Configure Express pour faire confiance au proxy
-app.set('trust proxy', true);
 
 //Recuperation de IP de l'utilisateur
 app.use((req, res, next) => {
@@ -531,6 +489,14 @@ app.use((req, res, next) => {
       next();
     });
 });
+
+
+
+
+
+
+
+
 
 app.post('/api/cart/update', async (req, res) => {
   const { productId, action } = req.body;
