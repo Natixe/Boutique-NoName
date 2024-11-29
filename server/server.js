@@ -472,22 +472,24 @@ cron.schedule('*/1 * * * *', async () => {
 });
 
 //Recuperation de IP de l'utilisateur
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const ipAddress = req.ip;
-  console.log('Adresse IP du visiteur :', ipAddress);
 
-  // Enregistrement dans la base de données
-  pool.query(`
-    INSERT INTO visits_log (ip_address) VALUES ($1)
-  `, [ipAddress])
-    .then(() => {
-      console.log('Visite enregistrée avec succès');
-      next();
-    })
-    .catch(err => {
-      console.error('Erreur lors de l\'enregistrement de la visite:', err.message);
-      next();
-    });
+  try {
+    await pool.query(`
+      INSERT INTO visits_log (ip_address, visit_date, timestamp) 
+      VALUES ($1, CURRENT_DATE, NOW())
+      ON CONFLICT (ip_address, visit_date)
+      DO NOTHING
+    `, [ipAddress]);
+
+    console.log(`Adresse IP du visiteur : ${ipAddress}`);
+    console.log('Visite enregistrée avec succès');
+  } catch (error) {
+    console.error('Erreur lors de l\'insertion de l\'IP:', error.message);
+  }
+  
+  next();
 });
 
 
