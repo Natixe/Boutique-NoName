@@ -39,7 +39,7 @@ app.use(
         defaultSrc: ["*"],
         scriptSrc: ["*"],
         styleSrc: ["*"],
-        imgSrc: ["*"],
+        imgSrc: ["*", "data:"],
         connectSrc: ["*"],
         fontSrc: ["*"],
         frameSrc: ["*"],
