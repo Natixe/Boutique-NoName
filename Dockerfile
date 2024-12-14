@@ -44,6 +44,7 @@ COPY --from=build-main /app/dist ./dist
 COPY --from=build-main /app/process.yml ./
 COPY --from=build-main /app/start.sh ./
 COPY --from=build-main /app/server ./server
+COPY --from=build-main /app/server/Email ./server/Email
 COPY --from=build-main /app/.env ./ 
 COPY --from=build-main /app/upload/images ./server/upload/images
 

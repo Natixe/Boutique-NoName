@@ -6,7 +6,7 @@ import RelatedProducts from '../Components/RelatedProducts/RelatedProducts'
 import { useParams } from 'react-router-dom'
 import { ShopContext } from '../Context/ShopContext'
 
-const Product = () => {
+export const Product = () => {
   const {products} = useContext(ShopContext);
   const {productId} = useParams();
   const [product,setProduct] = useState(false);

@@ -5,7 +5,7 @@ import Offers from '../Components/Offers/Offers'
 import NewCollections from '../Components/NewCollections/NewCollections'
 import NewsLetter from '../Components/NewsLetter/NewsLetter'
 
-const Shop = () => {
+export const Shop = () => {
 
   const [popular, setPopular] = useState([]);
   const [newcollection, setNewCollection] = useState([]);

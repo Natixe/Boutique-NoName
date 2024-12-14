@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./CSS/LoginSignup.css";
 
-const LoginSignup = () => {
+export const LoginSignup = () => {
 
   const [state,setState] = useState("Login");
   const [formData,setFormData] = useState({username:"",email:"",password:""});

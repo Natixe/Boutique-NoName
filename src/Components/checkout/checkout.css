@@ -1,0 +1,255 @@
+
+.CheckoutContainer{
+    width: 100%;
+    height: 1500px;
+    display: flex;
+}
+
+.ContainerMethodInfo{
+    width: 64%;
+    height: 100%;
+    display: flex;
+}
+
+.BOXRIGHTContainer{
+    width: 19%;
+    height: 100%;
+}
+
+.BOXLEFTContainer{
+    width: 19%;
+    height: 100%;
+}
+
+.ContainerPayment{
+    width: 55%;
+    height: 100%;
+    display: flex;
+}
+
+.BOXRIGHTMethodPayment{
+    margin-top: 15%;
+    width: 5%;
+    height: 55%;
+    border-left: 1px solid hsl(0, 4%, 90%);
+
+}
+
+.BOXLEFTMethodPayment{
+    width: 1%;
+    height: 100%;
+}
+
+.MethodPayment{
+    width: 85%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.PayPalButton{
+    width: 80%;
+    height: 70%;
+
+}
+
+.InformationCardContainer{
+    width: 45%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: flex-start;
+}
+
+.cartInformation{
+    margin-top: 25%;
+    height: 60%;
+    width: 85%;
+    display: table-row-group;
+
+}
+
+
+.ItemsInfo{
+    border-top: 1px solid hsl(0, 4%, 90%);
+    justify-content: space-between;
+    flex-direction: row;
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid hsl(0, 4%, 90%);
+}
+
+.ContainerformationImageinfo{
+    display: flex;
+    width: 75px;
+    height: 90px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.formationImageinfo{
+    width: 60px;
+    height: 78.25px;
+}
+
+.descriptionInfo {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.DescriptionFormationInfo {
+    width: 35%;
+    height: 100%;
+    display: flex;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.TextDescriptionFormationInfo{
+    color: #1D1D1F;
+    font-family: 'Myriad Apple';
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.4705882353;
+    text-align: left;
+}
+
+.ContainerTotalInfo{
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+.EuroInfotext{
+    color: #1D1D1F;
+    font-family: 'Myriad Apple';
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.4705882353;
+}
+
+.TotalInfotext{
+    color: #1D1D1F;
+    font-family: 'Myriad Apple';
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.4705882353;
+}
+
+.BOXCHECKOUT01{
+    width: 10%;
+    height: 5%;
+    background-color: blueviolet;
+    color: blueviolet;
+}
+
+@media screen and (max-width: 1440px) {
+    .cartInformation{
+        width: 95%;
+    }
+    .price {
+        font-size: 16px;
+    }
+}
+@media screen and (max-width: 1024px) {
+    .cartInformation {
+        margin-top: 35%;
+    }
+    .MethodPayment {
+        width: 90%;
+    }
+    .BOXRIGHTMethodPayment {
+        margin-top: 27%;
+        height: 45%;
+    }
+}
+@media screen and (max-width: 768px) {
+
+    .ContainerMethodInfo {
+        width: 80%;
+    }
+    .BOXLEFTContainer {
+        width: 10%;
+    }
+    .BOXRIGHTContainer {
+        width: 10%;
+    }
+    .cartInformation {
+        margin-top: 40%;
+    }
+}
+@media screen and (max-width: 480px) {
+    .cartInformation {
+        width: 100%;
+        margin-top: -80%;
+
+    }
+    .InformationCardContainer {
+        width: 100%;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .ContainerTotalInfo {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        border-bottom: 1px solid hsl(0, 7%, 92%);
+    }
+    .TotalInfo{
+        width: 92%;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .MethodPayment {
+        height: 0%;
+        width: 100%;
+    }
+    .ItemsCheckout {
+        border-top: 1px solid hsl(0, 4%, 90%);
+        flex-direction: row;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+}
+@media screen and (max-width: 320px) {
+    .TextDescriptionFormationInfo {
+        font-size: 13px;
+    }
+    .formationImageinfo {
+        width: 55px;
+        height: 71.73px;
+    }
+    .ContainerformationImageinfo {
+        width: 65px;
+    }
+    .DescriptionFormationInfo {
+        width: 30%;
+    }
+    .contHandler {
+        width: 85px;
+    }
+    .ItemsCheckout {
+        flex-wrap: nowrap;
+    }
+
+}
+
+
+      
+

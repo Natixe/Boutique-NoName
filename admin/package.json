@@ -15,6 +15,7 @@
     "@sentry/browser": "^8.40.0",
     "@sentry/react": "^8.40.0",
     "ag-charts-react": "^10.3.1",
+    "axios": "^1.7.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",

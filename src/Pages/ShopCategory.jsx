@@ -4,7 +4,7 @@ import dropdown_icon from '../Components/Assets/dropdown_icon.png'
 import Item from "../Components/Item/Item";
 import { Link } from "react-router-dom";
 
-const ShopCategory = (props) => {
+export const ShopCategory = (props) => {
 
   const [allproducts, setAllProducts] = useState([]);
 

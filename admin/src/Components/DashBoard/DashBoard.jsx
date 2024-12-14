@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom'
 
 
 import NombreDeVisit from "./Graphique/NombreDeVisit";
-import CompteActifs from "./Graphique/CompteActifs";
-import VendusAddPanier from "./Graphique/VendusAddPanier";
-import ChiffreAffaire from "./Graphique/ChiffreAffaire";
-import CAcategorie from "./Graphique/CAcategorie";
+import NumberOfAccountsCreated from "./Graphique/NumberOfAccountsCreated";
+//import VendusAddPanier from "./Graphique/VendusAddPanier";
+//import ChiffreAffaire from "./Graphique/ChiffreAffaire";
+//import CAcategorie from "./Graphique/CAcategorie";
 
 
 
@@ -24,9 +24,9 @@ const DashBoard = () => {
         </div>
 
         <div className="chart">
-          <CompteActifs/>
+          <NumberOfAccountsCreated/>
         </div>
-
+{/* Compare this snippet from admin/src/Components/DashBoard/DashBoard.jsx:
         <div className="chart">
           <VendusAddPanier/>
         </div>
@@ -37,7 +37,7 @@ const DashBoard = () => {
         
         <div className="chart">
           <CAcategorie/>
-        </div>
+        </div>*/}
       </div>
     </>
   );

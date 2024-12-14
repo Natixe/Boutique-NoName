@@ -3,9 +3,9 @@ import { backend_url } from "../App";
 
 export const ShopContext = createContext(null);
 
-const ShopContextProvider = (props) => {
-
+export const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const getDefaultCart = () => {
     let cart = {};
@@ -18,24 +18,25 @@ const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState(getDefaultCart());
 
   useEffect(() => {
-    fetch(`${backend_url}/allproducts`)
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
+    const fetchProductsAndCart = async () => {
+      const productsData = await fetch(`${backend_url}/allproducts`).then(res => res.json());
+      setProducts(productsData);
+      setLoading(false); // Les produits sont chargés
 
-    if (localStorage.getItem("auth-token")) {
-      fetch(`${backend_url}/getcart`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/form-data',
-          'auth-token': `${localStorage.getItem("auth-token")}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(),
-      })
-        .then((resp) => resp.json())
-        .then((data) => { setCartItems(data) });
-    }
-  }, [])
+      if (localStorage.getItem("auth-token")) {
+        const cartData = await fetch(`${backend_url}/getcart`, {
+          method: 'POST',
+          headers: {
+            'auth-token': `${localStorage.getItem("auth-token")}`,
+            'Content-Type': 'application/json',
+          },
+        }).then(resp => resp.json());
+        setCartItems(cartData);
+      }
+    };
+  
+    fetchProductsAndCart();
+  }, []);
 
   const getTotalCartAmount = () => {
     let totalAmount = 0;
@@ -97,7 +98,21 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  const contextValue = { products, getTotalCartItems, cartItems, addToCart, removeFromCart, getTotalCartAmount };
+  const clearCart = () => {
+    const newCart = getDefaultCart();
+    setCartItems(newCart);
+    // Optionnel : vider le panier côté serveur si connecté
+    if (localStorage.getItem("auth-token")) {
+      fetch(`${backend_url}/clearcart`, {
+        method: 'POST',
+        headers: {
+          'auth-token': `${localStorage.getItem("auth-token")}`,
+          'Content-Type': 'application/json',
+        }
+      })
+    }
+  };
+  const contextValue = { products, loading, getTotalCartItems, cartItems, addToCart, removeFromCart, getTotalCartAmount, clearCart  };
   return (
     <ShopContext.Provider value={contextValue}>
       {props.children}

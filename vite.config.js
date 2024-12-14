@@ -1,10 +1,16 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 // vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import dotenv from 'dotenv';
 
+dotenv.config();
 // vite.config.js
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), sentryVitePlugin({
+    org: "freepbyh",
+    project: "javascript-react"
+  })],
   base: "/",
   server: {
     host: '0.0.0.0',
@@ -26,6 +32,9 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'dist', // Répertoire de sortie
+    // Répertoire de sortie
+    outDir: 'dist',
+
+    sourcemap: true
   },
 });
