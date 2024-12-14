@@ -49,3 +49,4 @@ dist-ssr
 package-lock.json
 # Sentry Config File
 .env.sentry-build-plugin
+src/Components/Paymentmethode/PayPalButtoncheckout/PaypalButton copy.txt
