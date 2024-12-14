@@ -25,7 +25,8 @@ export const PaypalButton = () => {
     components: "buttons",
     intent: "capture", // Ajoutez l'intention si nécessaire
   };
-
+  console.log('PAYPAL_CLIENT_ID:', import.meta.env.PAYPAL_CLIENT_ID);
+  
   const validateEmail = (email) => {
     const regex = /^[a-zA-Z0-9.!#$%&'*+/?^_`|~-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,64}$/;
     return regex.test(email);
