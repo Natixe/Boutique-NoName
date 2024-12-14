@@ -36,36 +36,13 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "https://www.paypal.com",
-          "https://www.sandbox.paypal.com",
-          "https://js.paypal.com",
-          "https://js-de.sentry-cdn.com",
-          "https://apis.google.com",
-          "https://accounts.google.com",
-          "https://www.googletagmanager.com",
-        ],
-        connectSrc: [
-          "'self'",
-          "https://www.googleapis.com",
-          "https://smtp.gmail.com",
-          "https://www.google-analytics.com",
-          "https://www.googletagmanager.com",
-        ],      
-        imgSrc: [
-          "'self'",
-          "https://www.sandbox.paypal.com",
-          "https://www.google-analytics.com",
-          "https://www.googletagmanager.com", 
-        ],
-        frameSrc: [
-          "'self'",
-          "https://www.sandbox.paypal.com",
-          "https://www.paypal.com",
-          "https://www.googletagmanager.com",
-        ],
+        defaultSrc: ["*"],
+        scriptSrc: ["*"],
+        styleSrc: ["*"],
+        imgSrc: ["*"],
+        connectSrc: ["*"],
+        fontSrc: ["*"],
+        frameSrc: ["*"],
       },
     },
   })
