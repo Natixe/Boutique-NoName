@@ -5,16 +5,21 @@ import multer from "multer";
 import path from "path";
 import cors from "cors";
 import pkg from "pg";
-import helmet from 'helmet';
 import { fileURLToPath } from 'url';
 import cron from 'node-cron';
-import bcrypt from 'bcrypt';
-import nodemailer from 'nodemailer';
+import helmet from "helmet";
 import fetch from "node-fetch";
-import { getConfirmationEmailHtml } from "./Email/confirmationEmailTemplate.js";
 import emailRoutes from './routes/emailRoutes.js';
 import { sendEmail, sendGenericEmail } from './Email/emailController.js';
-
+import {
+  ApiError,
+  Client,
+  Environment,
+  LogLevel,
+  OrdersController,
+  PaymentsController,
+} from "@paypal/paypal-server-sdk";
+import bodyParser from "body-parser";
 
 
 const { Pool } = pkg;
@@ -22,31 +27,67 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+const { VITE_PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 const PAYPAL_API = base;
 
 const app = express();
+app.use(bodyParser.json());
+helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: [
+      "'self'",
+      'https://www.paypal.com',
+      'https://www.paypalobjects.com',
+      'https://www.sandbox.paypal.com',
+      'https://js.paypal.com',
+      'https://www.googletagmanager.com', // Google Tag Manager
+      'https://apis.google.com', // API Gmail
+      'https://ep-old-dream-a2kusb6c.eu-central-1.aws.neon.tech', // Domaine Neon Tech
+    ],
+    scriptSrcElem: [
+      "'self'",
+      'https://www.paypal.com',
+      'https://www.paypalobjects.com',
+      'https://www.sandbox.paypal.com',
+      'https://js.paypal.com',
+      'https://www.googletagmanager.com', // Google Tag Manager
+      'https://apis.google.com', // API Gmail
+      'https://ep-old-dream-a2kusb6c.eu-central-1.aws.neon.tech', // Domaine Neon Tech
+    ],
+    styleSrc: [
+      "'self'",
+      'https://www.paypal.com',
+      'https://cdnjs.cloudflare.com',
+      'https://fonts.googleapis.com', // Google Fonts
+    ],
+    imgSrc: [
+      "'self'",
+      'https://www.paypal.com',
+      'data:',
+      'https://www.googletagmanager.com', // Google Tag Manager
+    ],
+    connectSrc: [
+      "'self'",
+      'https://api-m.sandbox.paypal.com',
+      'https://apis.google.com', // API Gmail
+      'https://ep-old-dream-a2kusb6c.eu-central-1.aws.neon.tech', // Domaine Neon Tech (Si nécessaire)
+    ],
+    fontSrc: [
+      "'self'",
+      'https://fonts.googleapis.com',
+      'https://fonts.gstatic.com',
+    ],
+    objectSrc: ["'none'"],
+    upgradeInsecureRequests: [],
+  },
+});
 app.use(express.json());
 app.use(cors({
   origin: ['https://freepbyh.com', 'http://localhost:8888', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["*"],
-        scriptSrc: ["*"],
-        styleSrc: ["*"],
-        imgSrc: ["*", "data:"],
-        connectSrc: ["*"],
-        fontSrc: ["*"],
-        frameSrc: ["*"],
-      },
-    },
-  })
-);
 
 const pool = new Pool({
   user: process.env.PGUSER, 
@@ -58,6 +99,34 @@ const pool = new Pool({
     rejectUnauthorized: false,
   },
 });
+
+// Middleware pour vérifier le token
+const fetchuser = async (req, res, next) => {
+  const token = req.header("auth-token");
+  if (!token) {
+    return res.status(401).send({ errors: "Veuillez vous authentifier avec un token valide" });
+  }
+  try {
+    const data = jwt.verify(token, "secret_ecom");
+    req.user = data.user;
+    next();
+  } catch {
+    res.status(401).send({ errors: "Token invalide" });
+  }
+};
+
+// Après avoir vérifié le token JWT
+app.use(async (req, res, next, _) => {
+  if (req.user && req.user.id) {
+    try {
+      await pool.query('UPDATE users SET last_active = NOW() WHERE id = $1', [req.user.id]);
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour de last_active:', err.message);
+    }
+  }
+  next();
+});
+
 
 // Vérification de la connexion à la base de données
 pool.connect((err, client, release) => {
@@ -71,47 +140,48 @@ pool.connect((err, client, release) => {
 // Middleware d'authentification Admin (JWT)
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
+  console.log('Authorization Header:', authHeader); // Log du header
   if (authHeader) {
     const token = authHeader.split(' ')[1];
     jwt.verify(token, 'votre_secret_jwt', (err, user) => {
       if (err) {
-        return res.sendStatus(403); // Token invalide
+        console.error('Erreur JWT:', err); // Log de l'erreur JWT
+        return res.status(403).json({ message: 'Token invalide' });
       }
       req.user = user;
+      console.log('Utilisateur authentifié:', user); // Log de l'utilisateur
       next();
     });
   } else {
-    res.sendStatus(401); // Non authentifié
+    console.warn('Pas de header Authorization'); // Log en cas d'absence de header
+    res.status(401).json({ message: 'Non authentifié' });
   }
 };
 
-// Middleware pour utilisateurs (JWT)
-const fetchuser = async (req, res, next) => {
-  const token = req.header("auth-token");
-  if (!token) {
-    return res.status(401).send({ errors: "Veuillez vous authentifier avec un token valide" });
-  }
-  try {
-    const data = jwt.verify(token, "secret_ecom");
-    req.user = data.user;
-    // Mise à jour du last_active utilisateur si nécessaire
-    if (req.user && req.user.id) {
-      try {
-        await pool.query('UPDATE users SET last_active = NOW() WHERE id = $1', [req.user.id]);
-      } catch (err) {
-        console.error('Erreur lors de la mise à jour de last_active:', err.message);
-      }
-    }
-    next();
-  } catch {
-    res.status(401).send({ errors: "Token invalide" });
-  }
-};
 
 // Route de test santé
 app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running' });
 });
+
+
+const client = new Client({
+  clientCredentialsAuthCredentials: {
+    oAuthClientId: VITE_PAYPAL_CLIENT_ID,
+    oAuthClientSecret: PAYPAL_CLIENT_SECRET,
+  },
+  timeout: 0,
+  environment: Environment.Sandbox,
+  logging: {
+    logLevel: LogLevel.Info,
+    logRequest: { logBody: true },
+    logResponse: { logHeaders: true },
+  },
+});
+
+const ordersController = new OrdersController(client);
+const paymentsController = new PaymentsController(client);
+
 
 // Route de connexion
 app.post('/api/admin/login', async (req, res) => {
@@ -198,11 +268,10 @@ app.get('/oauth2callback', async (req, res) => {
 
 // Function to generate PayPal access token
 const generateAccessToken = async () => {
-  // Génère un token d'accès PayPal
-  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
-    throw new Error("Manque le PayPal Client ID ou Secret dans les variables d'environnement");
+  if (!VITE_PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+    throw new Error("Manque le PayPal Client ID ou Secret");
   }
-  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString("base64");
+  const auth = Buffer.from(`${VITE_PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString("base64");
   const response = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
     method: "POST",
     body: "grant_type=client_credentials",
@@ -217,6 +286,7 @@ const generateAccessToken = async () => {
   const data = await response.json();
   return data.access_token;
 };
+
 
 const handleResponse = async (response) => {
   const text = await response.text();
@@ -235,6 +305,7 @@ const handleResponse = async (response) => {
 const createOrder = async (cart) => {
   const accessToken = await generateAccessToken();
 
+  // cart est un tableau d'items { name, unit_amount: { value: '...' }, quantity: ... }
   const items = cart.map(item => ({
     name: item.name,
     unit_amount: {
@@ -249,71 +320,158 @@ const createOrder = async (cart) => {
     .toFixed(2);
 
   const orderPayload = {
-    intent: 'CAPTURE',
-    purchase_units: [{
-      amount: {
-        currency_code: 'EUR',
-        value: totalValue,
-        breakdown: {
-          item_total: {
-            currency_code: 'EUR',
-            value: totalValue,
+    intent: "CAPTURE",
+    purchase_units: [
+      {
+        amount: {
+          currency_code: "EUR",
+          value: totalValue,
+          breakdown: {
+            item_total: {
+              currency_code: "EUR",
+              value: totalValue,
+            },
+          },
+        },
+        items: items,
+      },
+    ],
+    payment_source: {
+      card: {
+        attributes: {
+          verification: {
+            method: "SCA_WHEN_REQUIRED",
           },
         },
       },
-      items: items,
-    }],
+    },
   };
 
   const orderResponse = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${await accessToken}`,
     },
     body: JSON.stringify(orderPayload),
   });
 
   if (!orderResponse.ok) {
     const errorData = await orderResponse.json();
-    throw new Error(errorData.error || "Échec de la création de la commande PayPal");
+    throw new Error(`Erreur lors de la création de la commande PayPal: ${JSON.stringify(errorData)}`);
   }
 
-  return await orderResponse.json();
+  const responseData = await orderResponse.json();
+  return responseData;
 };
 
 // Function to capture the order
 const captureOrder = async (orderID) => {
   const accessToken = await generateAccessToken();
-  const url = `${PAYPAL_API}/v2/checkout/orders/${orderID}/capture`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${PAYPAL_API}/v2/checkout/orders/${orderID}/capture`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${await accessToken}`,
     },
   });
 
-  const { jsonResponse, httpStatusCode } = await handleResponse(response);
-
-  if (httpStatusCode !== 201) {
-    throw new Error(`Échec de la capture de la commande: ${jsonResponse.error || JSON.stringify(jsonResponse)}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Échec de la capture de la commande: ${JSON.stringify(errorData)}`);
   }
 
-  return jsonResponse;
+  const json = await response.json();
+  return json;
 };
 
 
 // PayPal routes
 app.post('/api/orders', async (req, res) => {
+  const cart = req.body.cart; // cart provenant du frontend
+  if (!Array.isArray(cart)) {
+    return res.status(400).json({ error: "Le champ cart doit être un tableau." });
+  }
   try {
-    const { cart } = req.body;
     const order = await createOrder(cart);
-    res.status(201).json(order);
+    res.json(order); // renvoie { id: "PAYPAL_ORDER_ID", ... }
   } catch (error) {
-    console.error('Erreur de commande :', error);
-    res.status(500).json({ error: 'Erreur lors de la création de la commande.' });
+    console.error('Erreur lors de la création de la commande:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+const captureAuthorize = async (authorizationId) => {
+  const collect = {
+      authorizationId: authorizationId,
+      prefer: "return=minimal",
+      body: {
+          finalCapture: false,
+      },
+  };
+  try {
+      const { body, ...httpResponse } =
+          await paymentsController.authorizationsCapture(collect);
+      // Get more response info...
+      // const { statusCode, headers } = httpResponse;
+      return {
+          jsonResponse: JSON.parse(body),
+          httpStatusCode: httpResponse.statusCode,
+      };
+  } catch (error) {
+      if (error instanceof ApiError) {
+          // const { statusCode, headers } = error;
+          throw new Error(error.message);
+      }
+  }
+};
+
+const authorizeOrder = async (orderID) => {
+  const collect = {
+      id: orderID,
+      prefer: "return=minimal",
+  };
+
+  try {
+      const { body, ...httpResponse } = await ordersController.ordersAuthorize(
+        collect
+      );
+      // Get more response info...
+      // const { statusCode, headers } = httpResponse;
+      return {
+          jsonResponse: JSON.parse(body),
+          httpStatusCode: httpResponse.statusCode,
+      };
+  } catch (error) {
+      if (error instanceof ApiError) {
+          // const { statusCode, headers } = error;
+          throw new Error(error.message);
+      }
+  }
+};
+
+app.post("/api/orders/:orderID/authorize", async (req, res) => {
+  try {
+      const { orderID } = req.params;
+      const { jsonResponse, httpStatusCode } = await authorizeOrder(orderID);
+      res.status(httpStatusCode).json(jsonResponse);
+  } catch (error) {
+      console.error("Failed to create order:", error);
+      res.status(500).json({ error: "Failed to authorize order." });
+  }
+});
+
+// captureAuthorize route
+app.post("/orders/:authorizationId/captureAuthorize", async (req, res) => {
+  try {
+      const { authorizationId } = req.params;
+      const { jsonResponse, httpStatusCode } = await captureAuthorize(
+          authorizationId
+      );
+      res.status(httpStatusCode).json(jsonResponse);
+  } catch (error) {
+      console.error("Failed to create order:", error);
+      res.status(500).json({ error: "Failed to capture authorize." });
   }
 });
 
@@ -321,11 +479,10 @@ app.post('/api/orders', async (req, res) => {
 app.post('/api/orders/:orderID/capture', async (req, res) => {
   try {
     const { orderID } = req.params;
-    const { email, name, cartItems } = req.body;
-
+    const { email, name, cartItems } = req.body; // informations du frontend
     const order = await captureOrder(orderID);
 
-    // Envoi de l'e-mail après capture
+    // Envoi email après la capture réussie
     await sendEmail({ email, name, cartItems, orderData: order });
 
     res.status(201).json(order);

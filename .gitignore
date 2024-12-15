@@ -50,3 +50,5 @@ package-lock.json
 # Sentry Config File
 .env.sentry-build-plugin
 src/Components/Paymentmethode/PayPalButtoncheckout/PaypalButton copy.txt
+src/Components/Paymentmethode/PayPalButtoncheckout/Fichier.txt
+src/Components/Paymentmethode/PayPalButtoncheckout/Prompt.txt

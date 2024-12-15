@@ -45,8 +45,9 @@ COPY --from=build-main /app/process.yml ./
 COPY --from=build-main /app/start.sh ./
 COPY --from=build-main /app/server ./server
 COPY --from=build-main /app/server/Email ./server/Email
-COPY --from=build-main /app/.env ./ 
+COPY --from=build-main /app/server/Email ./server/routes
 COPY --from=build-main /app/upload/images ./server/upload/images
+COPY --from=build-main /app/.env ./ 
 
 # Copier les artefacts construits de l'application admin
 COPY --from=build-admin /app/admin/dist ./admin/dist

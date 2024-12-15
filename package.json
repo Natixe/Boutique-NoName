@@ -21,10 +21,12 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@paypal/paypal-server-sdk": "^0.6.1",
     "@paypal/react-paypal-js": "^8.7.0",
     "@sentry/react": "^8.42.0",
     "@sentry/vite-plugin": "^2.22.7",
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
     "concurrently": "^9.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

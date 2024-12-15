@@ -43,15 +43,14 @@ jobs:
           echo "PGUSER=${{ secrets.PGUSER }}" >> ${{ github.workspace }}/.env
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> ${{ github.workspace }}/.env
           echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}" >> ${{ github.workspace }}/.env
-          echo "APP_ENV=${{ secrets.PAYPAL_CLIENT_ID }}" >> ${{ github.workspace }}/.env
-          echo "APP_ENV=${{ secrets.PAYPAL_CLIENT_SECRET }}" >> ${{ github.workspace }}/.env
-          echo "APP_ENV=${{ secrets.REFRESH_TOKEN_GOOGLE }}" >> ${{ github.workspace }}/.env
-          echo "APP_ENV=${{ secrets.REDIRECT_URI_GOOGLE }}" >> ${{ github.workspace }}/.env
-          echo "APP_ENV=${{ secrets.CLIENT_SECRET_GOOGLE }}" >> ${{ github.workspace }}/.env
-          echo "APP_ENV=${{ secrets.CLIENT_ID_GOOGLE }}" >> ${{ github.workspace }}/.env
-          echo "APP_ENV=${{ secrets.REACT_APP_SENTRY_DSN }}" >> ${{ github.workspace }}/.env
-
-
+          echo "VITE_PAYPAL_CLIENT_ID=${{ secrets.VITE_PAYPAL_CLIENT_ID }}" >> ${{ github.workspace }}/.env
+          echo "PAYPAL_CLIENT_SECRET=${{ secrets.PAYPAL_CLIENT_SECRET }}" >> ${{ github.workspace }}/.env
+          echo "REFRESH_TOKEN_GOOGLE=${{ secrets.REFRESH_TOKEN_GOOGLE }}" >> ${{ github.workspace }}/.env
+          echo "REDIRECT_URI_GOOGLE=${{ secrets.REDIRECT_URI_GOOGLE }}" >> ${{ github.workspace }}/.env
+          echo "CLIENT_SECRET_GOOGLE=${{ secrets.CLIENT_SECRET_GOOGLE }}" >> ${{ github.workspace }}/.env
+          echo "CLIENT_ID_GOOGLE=${{ secrets.CLIENT_ID_GOOGLE }}" >> ${{ github.workspace }}/.env
+          echo "REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }}" >> ${{ github.workspace }}/.env
+          
       - name: Upload .env
         uses: actions/upload-artifact@v4
         with:

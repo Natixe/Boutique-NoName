@@ -2,6 +2,8 @@ import nodemailer from 'nodemailer';
 import { google } from 'googleapis';
 import "dotenv/config";
 
+import getConfirmationEmailHtml from './confirmationEmailTemplate.js';
+
 const oAuth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID_GOOGLE,
   process.env.CLIENT_SECRET_GOOGLE,
@@ -45,12 +47,15 @@ export const sendEmail = async ({ email, name, cartItems, orderData }) => {
       .map(item => `<li>${item.name} x ${item.quantity}: ${item.unit_amount.value}€</li>`)
       .join('');
 
+
+    const htmlContentConfirmation = getConfirmationEmailHtml(name, orderData, itemsList);
+  
     // Définir les options de l'e-mail
     const mailOptions = {
       from: 'Boutique NoName <support@freepbyh.com>',
       to: "natixe28@gmail.com",
       subject: 'Confirmation de votre commande',
-      html: `<h1>Merci ${name}!</h1><p>Votre commande n°${orderData.id} est confirmée.</p><ul>${itemsList}</ul>`
+      html: htmlContentConfirmation,
     };
 
     // Envoyer l'e-mail
@@ -61,6 +66,9 @@ export const sendEmail = async ({ email, name, cartItems, orderData }) => {
     throw new Error('Email non envoyé');
   }
 };
+
+
+
 
 // Fonction pour envoyer un e-mail générique
 export const sendGenericEmail = async (to, subject, text) => {
